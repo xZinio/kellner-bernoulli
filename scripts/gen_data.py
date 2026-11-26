@@ -4,7 +4,7 @@
 import bisect, math, sys
 def primes(n):
     s = bytearray([1]) * (n + 1); s[0:2] = b'\0\0'
-    for i in range(2, int(n ** .5) + 1):
+    for i in range(2, math.isqrt(n) + 1):
         if s[i]: s[i*i::i] = bytearray(len(s[i*i::i]))
     return [i for i in range(n + 1) if s[i]]
 PR = primes(4_100_000)
@@ -67,6 +67,6 @@ def main():
         o += emit('window%d' % i, b, 'Block %d of the sparse list of primes.' % i)
     o += '/-- The blocks; consecutive blocks overlap in 16 elements. -/\ndef windows : List (List ℕ) := [\n  ' + ', '.join('window%d' % i for i in range(len(blocks))) + ']\n\n'
     o += 'end KellnerBernoulli.Data\n'
-    open('KellnerBernoulli/Data.lean', 'w').write(o)
-    print('blocks', len(blocks), 'bytes', len(o), file=sys.stderr)
+    open('KellnerBernoulli/Data.lean', 'w', encoding='utf-8').write(o)
+    print('blocks', len(blocks), 'bytes', len(o.encode()), file=sys.stderr)
 main()

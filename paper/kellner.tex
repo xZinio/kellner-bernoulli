@@ -1,6 +1,6 @@
 \documentclass[11pt]{amsart}
 \usepackage[margin=1.15in]{geometry}
-\usepackage{amsmath,amssymb,amsthm}
+\usepackage{amsmath,amssymb,amsthm,array}
 \usepackage[hidelinks]{hyperref}
 \newtheorem{theorem}{Theorem}
 \newtheorem{corollary}[theorem]{Corollary}
@@ -13,16 +13,20 @@
 \newcommand{\Dp}{\mathbb D^{+}}
 \newcommand{\fl}[1]{\lfloor #1\rfloor}
 \newcommand{\Sb}{\overline{\mathcal S}}
+\newcommand{\lean}[1]{\texttt{\detokenize{#1}}}
 \title[Bernoulli polynomials with integral derivatives]{Kellner's conjectures on Bernoulli polynomials\\ with integral derivatives}
 \author{Carlos Kuban}
-\date{Draft, November 2026}
+\date{Revised draft, November 2026}
 \begin{document}
 \begin{abstract}
-We prove that the derivative $B_n'(x)$ of the $n$th Bernoulli polynomial has integral coefficients if and only if
-$n\in\{1,2,4,6,10,12,28,30,36,60\}$, as conjectured by Kellner. This and several related conjectures of Kellner and of Alekseyev follow from
-another conjecture of Kellner, which we also prove: for every $n>192$ there is a prime $p>\sqrt n$ such that the sum of the base-$p$ digits of $n$ is at least~$p$.
-The proof is short. A telescoping argument shows that almost all integers $m$ slightly larger than $\sqrt n$ have base-$m$ digit sum at least $m$;
-this is combined with a classical explicit estimate for the number of primes in short intervals and a small computation.
+We prove that for $n\ge1$ the derivative $B_n'(x)$ of the $n$th Bernoulli polynomial has integral coefficients if and only if
+$n\in\{1,2,4,6,10,12,28,30,36,60\}$, as conjectured by Kellner. The main step is another conjecture of Kellner, which we also prove:
+for every $n>192$ there is a prime $p>\sqrt n$ such that the sum of the base-$p$ digits of $n$ is at least~$p$.
+We prove it in a quantitative form, with explicit lower bounds for the number of such primes, and deduce from it several related
+conjectures of Kellner and of Alekseyev; some of these need the stronger bounds.
+The proof is short. A telescoping argument shows that fewer than $4+2U^2/\sqrt n$ of the $U$ integers $m$ following $\fl{\sqrt n}$
+have base-$m$ digit sum smaller than $m$; this is combined with a classical explicit estimate for the number of primes in short intervals
+and a computation.
 \end{abstract}
 \maketitle
 
@@ -32,10 +36,16 @@ For integers $m\ge2$ and $n\ge1$ let $s_m(n)$ be the sum of the base-$m$ digits 
 \[
 \Dp_n=\prod_{\substack{p>\sqrt n\\ s_p(n)\ge p}}p .
 \]
-Here and below $p$ denotes a prime, and $\omega(m)$ is the number of primes dividing $m$. The product is finite, as $s_p(n)=n$ for $p>n$.
-Kellner \cite[Conjectures 1 and 2]{K17} conjectured that $\Dp_n>1$ for all $n>192$ and that $\omega(\Dp_n)\sim\kappa\sqrt n/\log n$ for some constant $\kappa>1$.
-The asymptotic formula was proved, with $\kappa=2$, by Bordell\`es, Luca, Moree and Shparlinski \cite{BLMS}, but their method does not lead to an explicit
-bound beyond which $\Dp_n>1$; see \cite[p.~2]{K24}. We prove the first conjecture.
+Here and below $p$ denotes a prime, $\omega(m)$ is the number of primes dividing $m$, and $\operatorname{rad}(m)$ is the product of the
+primes dividing $m$. The product $\Dp_n$ is finite, as $s_p(n)=n$ for $p>n$.
+
+Kellner \cite[Conjecture 1]{K17} conjectured that for $n>192$ the largest prime $p$ with $s_p(n)\ge p$ exceeds $\sqrt n$, that is,
+$\Dp_n>1$ (see \cite[Conjecture 2(i)]{K24}), together with a second inequality, which is Corollary~\ref{cor:K17} below.
+He also conjectured that $\omega(\Dp_n)\sim\kappa\sqrt n/\log n$ for some constant $\kappa>1$ \cite[Conjecture 2]{K17}.
+This asymptotic formula was proved, with $\kappa=2$, by Bordell\`es \cite[Theorem 1 and Corollary 2]{B17} and by Bordell\`es,
+Luca, Moree and Shparlinski \cite[Theorem 1.5 and Corollary 1.6]{BLMS}, who also showed that $\Dp_n>1$ for all sufficiently large~$n$
+\cite[Theorem 1.4]{BLMS}. These results give no numerical bound beyond which $\Dp_n>1$ (see \cite[p.~3]{K24}), so they do not settle
+the conjecture. We prove it in the following form.
 
 \begin{theorem}\label{thm:main}
 For every $n>192$ there is a prime $p>\sqrt n$ with $s_p(n)\ge p$. More generally $\omega(\Dp_n)\ge k$ for all $n>b_k$, where
@@ -45,20 +55,29 @@ k&1&2&3&4&5&6&7&8\\ \hline
 b_k&192&1080&2014&2430&3360&5076&5796&11824
 \end{array}
 \]
-and these values of $b_k$ are best possible.
+and these values of $b_k$ are best possible: $\omega(\Dp_{b_k})=k-1$.
 \end{theorem}
 
-The following statements are consequences. That the sets in Corollaries \ref{cor:first}--\ref{cor:higher} are finite was shown by Kellner \cite{K24}.
+The first statement of Theorem~\ref{thm:main} suffices for Corollaries~\ref{cor:first} and~\ref{cor:alek} and for the first inequality
+in Corollary~\ref{cor:K17}. Corollaries~\ref{cor:R} and~\ref{cor:K17} use the case $k=2$, and Corollary~\ref{cor:higher} uses the cases
+$k\le3$ and, for its table, the stronger bounds \eqref{eq:large} and \eqref{eq:middle} below.
 
-\begin{corollary}[{\cite[Conjecture 1]{K24}; OEIS A094960}]\label{cor:first}
-We have $B_n'(x)\in\ZZ[x]$ if and only if
+We use the convention $B_1=-\frac12$, so that $B_n(x)=\sum_{j=0}^n\binom njB_jx^{n-j}$; the other convention changes the sign of one
+coefficient and none of the statements below. The denominator of a polynomial $P\in\mathbb Q[x]$ is the least positive integer $d$ with
+$dP\in\ZZ[x]$, that is, the least common multiple of the denominators of its coefficients. That the sets in
+Corollaries~\ref{cor:first}--\ref{cor:higher} are finite was shown by Kellner \cite[Corollary 4, Theorems 10 and 14]{K24}, using~\cite{BLMS}.
+
+\begin{corollary}[{\cite[Conjecture 1(ii)]{K24}; OEIS A094960}]\label{cor:first}
+Let $n\ge1$. Then $B_n'(x)\in\ZZ[x]$ if and only if
 \[
 n\in\{1,2,4,6,10,12,28,30,36,60\}.
 \]
 \end{corollary}
 
+Kellner \cite[Theorem 3]{K24} showed that Corollary~\ref{cor:first} follows from the first statement of Theorem~\ref{thm:main}.
+
 \begin{corollary}[{\cite[Conjecture 11]{K24}; OEIS A195441}]\label{cor:R}
-The denominator of $B_n(x)-B_n$ equals the radical of $n+1$ if and only if $n\in\{3,5,8,9,11,27,29,35,59\}$.
+Let $n\ge1$. The denominator of $B_n(x)-B_n$ equals $\operatorname{rad}(n+1)$ if and only if $n\in\{3,5,8,9,11,27,29,35,59\}$.
 \end{corollary}
 
 For $k\ge1$ let $\Sb_k$ be the set of all $n\ge1$ for which the $k$th derivative $B_n^{(k)}(x)$ is in $\ZZ[x]$.
@@ -77,20 +96,25 @@ k&1&2&3&4&5&6&7&8&9&10&11&12\\ \hline
 \max\Sb_k&60&190&392&393&904&905&906&907&908&1089&2080&2387
 \end{array}
 \]
-In particular the lists in OEIS A366187 $(k=4)$ and A366188 $(k=5)$ are complete.
+In particular the $88$ terms of OEIS A366187 $(k=4)$ and the $125$ terms in the b-file of OEIS A366188 $(k=5)$ are all elements of
+these sets.
 \end{corollary}
 
 \begin{corollary}[{\cite[Conjecture 1]{K17}}]\label{cor:K17}
 Let $P_n$ be the largest prime $p$ with $s_p(n)\ge p$. For $n>192$ it exists, and $P_n>\sqrt n$ and $(n+1)/P_n<\sqrt n$.
 \end{corollary}
 
-\begin{corollary}[Conjecture of M.~Alekseyev, OEIS A094960]\label{cor:alek}
+\begin{corollary}[Conjecture of M.~Alekseyev \cite{OEIS}, A094960]\label{cor:alek}
 For every integer $k>78$ there is a prime $p\ge3$ such that the sum of the last two base-$p$ digits of $k$ is at least $p$.
 \end{corollary}
 
+Alekseyev stated this conjecture in 2012 in the OEIS entry A094960, and later proved it for all $k$ such that $k+1$ is not a prime,
+a power of $2$, or a Giuga number \cite{OEIS}.
+
 \section{The counting lemma}
 
-Let $n\ge1$, $x=\sqrt n$ and $s=\fl x$. For an integer $m>s$ put $q(m)=\fl{n/m}$. As $m^2\ge(s+1)^2>n$, we have $q(m)<m$, so $n$ has the base-$m$ digits $q(m)$ and $n-q(m)m$ and
+Let $n\ge1$, $x=\sqrt n$ and $s=\fl x$. For an integer $m>s$ put $q(m)=\fl{n/m}$. As $m^2\ge(s+1)^2>n$, we have $q(m)<m$, so $n$ has
+at most two digits in base $m$, namely $q(m)$ and $n-q(m)m$, and
 \begin{equation}\label{eq:digits}
 s_m(n)=n-(m-1)\,q(m).
 \end{equation}
@@ -101,12 +125,13 @@ Let $m\ge s+2$. Then $q(m-1)-q(m)\in\{0,1\}$, and $m$ is bad if and only if $q(m
 \end{lemma}
 \begin{proof}
 We have $0\le q(m-1)-q(m)<\frac n{m-1}-\frac nm+1=\frac n{m(m-1)}+1<2$, because $m(m-1)>(s+1)^2>n$.
-By \eqref{eq:digits}, $m$ is good if and only if $n-1\ge(m-1)(q(m)+1)$, that is, $\fl{\frac{n-1}{m-1}}>q(m)$ (see \cite[Lemma 6]{K17}). Now
+By \eqref{eq:digits}, $m$ is good if and only if $n-1\ge(m-1)(q(m)+1)$, that is, $\fl{\frac{n-1}{m-1}}>q(m)$. (This criterion is
+\cite[(11)]{K17} in the proof of \cite[Lemma 6]{K17}, where $m$ is a prime; the argument is the same.) Now
 $\fl{\frac{n-1}{m-1}}$ is $q(m-1)-1$ if $m-1$ divides $n$, and $q(m-1)$ otherwise. As $q(m-1)-q(m)\le1$, the claim follows.
 \end{proof}
 
 \begin{lemma}\label{lem:bad}
-For every $U\ge1$ at most $4+\frac{2U^2}{s+U}$ of the integers $s+1,\dots,s+U$ are bad.
+For every integer $U\ge1$ fewer than $4+\frac{2U^2}{s+U}$ of the integers $s+1,\dots,s+U$ are bad.
 \end{lemma}
 \begin{proof}
 Put $v=s+U-x$; then $0<v\le U$ and $x+v=s+U$. We use
@@ -114,31 +139,36 @@ Put $v=s+U-x$; then $0<v\le U$ and $x+v=s+U$. We use
 \frac n{s+U}=\frac{x^2}{x+v}=x-v+\frac{v^2}{x+v}\le x-v+\frac{U^2}{s+U}.
 \end{equation}
 
-(a) By Lemma \ref{lem:one} each of the differences $q(m-1)-q(m)$, $s+2\le m\le s+U$, is $0$ or $1$, and their sum is $q(s+1)-q(s+U)$. Hence the number of these $m$ with
-$q(m-1)=q(m)$ is $U-1-q(s+1)+q(s+U)$. We have $q(s+1)\ge s-1$, as $(s-1)(s+1)<n$, and \eqref{eq:frac} bounds $q(s+U)$. So the number in question is at most
+(a) By Lemma \ref{lem:one} each of the differences $q(m-1)-q(m)$, $s+2\le m\le s+U$, is $0$ or $1$, and their sum is $q(s+1)-q(s+U)$.
+Hence the number of these $m$ with $q(m-1)=q(m)$ is $U-1-q(s+1)+q(s+U)$. We have $q(s+1)\ge s-1$, as $(s-1)(s+1)<n$, and
+\eqref{eq:frac} bounds $q(s+U)$. So the number in question is at most
 \[
 U-s+x-v+\frac{U^2}{s+U}=2(x-s)+\frac{U^2}{s+U}<2+\frac{U^2}{s+U}.
 \]
 
-(b) Let $d_1<\dots<d_h$ be the divisors of $n$ in $[s+1,s+U-1]$. The function $y+n/y$ is at least $2x$ and strictly increasing for $y\ge x$. So the numbers $t_i=d_i+n/d_i$ are integers with
+(b) If $n$ has no divisor in $[s+1,s+U-1]$, there is nothing to show. Otherwise let $d_1<\dots<d_h$ be these divisors.
+The function $y+n/y$ is at least $2x$ and strictly increasing for $y\ge x$. So the numbers $t_i=d_i+n/d_i$ are integers with
 $2x\le t_1<\dots<t_h\le s+U+\frac n{s+U}\le2x+\frac{U^2}{s+U}$, by \eqref{eq:frac}. Hence $h\le1+\frac{U^2}{s+U}$.
 
-By Lemma \ref{lem:one}, a bad $m$ with $s+2\le m\le s+U$ is counted in (a), or $m-1$ is one of the divisors in (b). Together with $m=s+1$ this gives the bound.
+By Lemma \ref{lem:one}, a bad $m$ with $s+2\le m\le s+U$ is counted in (a), or $m-1$ is one of the divisors in (b).
+Together with $m=s+1$ this gives the bound.
 \end{proof}
 
-The number of good integers was bounded from above, by $\sqrt n$, in \cite[Lemma 7]{K17}; here we need that there are many of them.
-If a prime $p>s$ is good, then $p\mid\Dp_n$. So for all $n\ge1$ and $U\ge1$
+Kellner \cite[Lemma 7]{K17} counted the same events to show that fewer than $\sqrt n$ integers $m>\sqrt n$ are good;
+here we need that there are many of them. If a prime $p>s$ is good, then $p\mid\Dp_n$. So for all $n\ge1$ and integers $U\ge1$
 \begin{equation}\label{eq:main}
 \omega(\Dp_n)\ge\pi(s+U)-\pi(s)-4-\frac{2U^2}{s+U}.
 \end{equation}
 
 \section{Large \texorpdfstring{$n$}{n}}
 
-Let $s\ge10^9$ and write $\ell=\log s>20$. With $\vartheta(y)=\sum_{p\le y}\log p$, Rosser and Schoenfeld \cite{RS} (see \cite[Table 2]{BKLNW}) proved
+Let $s\ge10^9$ and write $\ell=\log s>20$. With $\vartheta(y)=\sum_{p\le y}\log p$, Rosser and Schoenfeld
+\cite[Corollary 2, (5.7)]{RS} (see also \cite[Table 2]{BKLNW}) proved
 \begin{equation}\label{eq:RS}
 |\vartheta(y)-y|<\frac y{40\log y}\qquad(y\ge678\,407).
 \end{equation}
-Much stronger bounds are known; for instance $|\vartheta(y)-y|<0.2\,y/\log^2y$ for $y\ge3\,594\,641$ \cite[Theorem 4.2]{D18}. Take $U=\fl{s/(4\ell)}$. Then $U\le s/80$ and $\log(s+U)\le\ell+\frac1{4\ell}\le1.00063\,\ell$, so
+Much stronger bounds are known; for instance $|\vartheta(y)-y|<0.2\,y/\log^2y$ for $y\ge3\,594\,641$ \cite[Theorem 4.2]{D18}
+(see also \cite[Table 3]{BKLNW}). Take $U=\fl{s/(4\ell)}$. Then $U\le s/80$ and $\log(s+U)\le\ell+\frac1{4\ell}\le1.00063\,\ell$, so
 \[
 \vartheta(s+U)-\vartheta(s)\ge U-\frac{2s+U}{40\,\ell}\ge\frac s{4\ell}-1-0.0504\,\frac s\ell=0.1996\,\frac s\ell-1,
 \]
@@ -149,46 +179,64 @@ Since $\frac{2U^2}{s+U}\le\frac s{8\ell^2}$, \eqref{eq:main} gives
 \begin{equation}\label{eq:large}
 \omega(\Dp_n)\ge0.0744\,\frac s{\log^2s}-5>10^5\qquad(s=\fl{\sqrt n}\ge10^9),
 \end{equation}
-because $s/\log^2s$ is increasing for $s>e^2$ and exceeds $2.3\cdot10^6$ at $s=10^9$.
+because $s/\log^2s$ is increasing for $s>e^2$ and exceeds $2.3\cdot10^6$ at $s=10^9$ (there $U=12\,063\,735$, and the bound in
+\eqref{eq:large} is $173\,238.3\ldots$).
 
 \section{Small \texorpdfstring{$n$}{n}}
 
-It remains to consider $n<10^{18}$. A prime $p>s$ is bad for a given $n\in[s^2,s^2+2s]$ if and only if, with $q=\fl{n/p}$, we have $q+(n-qp)<p$. So the $n$ for which $p$ is bad are those in the intervals
+It remains to consider $n<10^{18}$. Let $s^2\le n\le s^2+2s$. A prime $p>s$ is bad for $n$ if and only if, with $q=\fl{n/p}$, we have
+$q+(n-qp)<p$. So the $n\in[s^2,s^2+2s]$ for which $p$ is bad are those in the intervals
 \[
 [\,qp,\ qp+p-1-q\,]\cap[s^2,s^2+2s]\qquad(q\ge0),
 \]
-and only a few of these are non-empty. Given a list of primes exceeding $s$, the largest number of them that are bad for the same $n\in[s^2,s^2+2s]$ is therefore found by sorting the end points of these intervals.
-We did this for each $s$ with $1500\le s<10^9$ and the first $40$ primes exceeding $s$. It turned out that never more than $16$ of them are bad for the same $n$; hence
+and only a few of these are non-empty. Given a list of primes exceeding $s$, the largest number of them that are bad for the same
+$n\in[s^2,s^2+2s]$ is therefore found by sorting the end points of these intervals: an interval $[l,h]$ contributes $+1$ at $l$ and
+$-1$ at $h+1$, and at equal coordinates the contributions $-1$ are processed first.
+We did this for each $s$ with $1500\le s<10^9$ and the first $40$ primes exceeding $s$. Never more than $16$ of them are bad for the
+same $n$; the maximum $16$ is attained for the first time at $s=1726$, $n=2\,980\,768$. Hence
 \begin{equation}\label{eq:middle}
 \omega(\Dp_n)\ge24\qquad(1500^2\le n<10^{18}).
 \end{equation}
-For $n<1500^2$ we computed $\omega(\Dp_n)$ from the definition, as far as needed; the largest $n$ with $\omega(\Dp_n)<k$ is $b_k$, for $k\le8$. With \eqref{eq:large} and \eqref{eq:middle} this proves Theorem \ref{thm:main}.
+For $n<1500^2$ we computed $\omega(\Dp_n)$ from the definition, as far as needed; for $k\le8$ the largest $n$ with $\omega(\Dp_n)<k$ is
+$b_k$, and $\omega(\Dp_{b_k})=k-1$. With \eqref{eq:large} and \eqref{eq:middle} this proves Theorem \ref{thm:main}.
 
-The computation uses integer arithmetic only. It takes about $25$ minutes on one processor core, almost all of it for $s\ge4\cdot10^6$, a range which could also be covered by \eqref{eq:RS}. For $1500\le s\le4\cdot10^6$ it was repeated with a second, independently written program.
-The $n$ with $\Dp_n=1$ are $1$, $2$, $4$, $6$, $10$, $11$, $12$, $15$, $16$, $28$, $29$, $30$, $35$, $36$, $58$, $59$, $60$, $69$, $70$, $78$, $79$, $80$, $174$, $190$, $191$, $192$.
+The programs use integer arithmetic only. The computation for $1500\le s<10^9$ takes about $28$ CPU-minutes, almost all of it for
+$s\ge4\cdot10^6$, a range which could also be covered by \eqref{eq:RS}. For $1500\le s\le4\cdot10^6$ it was repeated with a second
+program, written separately in Python, which parametrizes the intervals differently. The programs, and a script that runs them and
+checks every value stated in this paper, are part of the code accompanying the paper (Section~\ref{sec:formal}).
+The $n$ with $\Dp_n=1$ are $1$, $2$, $4$, $6$, $10$, $11$, $12$, $15$, $16$, $28$, $29$, $30$, $35$, $36$, $58$, $59$, $60$, $69$,
+$70$, $78$, $79$, $80$, $174$, $190$, $191$, $192$.
 
 \section{Denominators}
 
-The following facts are due to Kellner and Sondow \cite{KS} and Kellner \cite{K17,K24}. We include a short proof. Let $(n)_k=n(n-1)\cdots(n-k+1)$.
+The following facts are known: the first statement of Proposition~\ref{prop:den} is due to Kellner and Sondow
+\cite[Theorems 1 and 2 and (28)]{KS} (see also \cite[Theorem 5]{K17}), the second to Kellner \cite[Theorem 13]{K24}.
+We include a short proof. Let $(n)_k=n(n-1)\cdots(n-k+1)$.
 
 \begin{proposition}\label{prop:den}
-Let $n\ge1$. The denominators of $B_n(x)-B_n$ and of $B_n^{(k)}(x)$, $1\le k\le n$, are squarefree. A prime $p$ divides the first of them if and only if $s_p(n)\ge p$, and the second if and only if
-$p\nmid(n)_k$ and $s_p(n-k+1)\ge p$.
+Let $n\ge1$. The denominators of $B_n(x)-B_n$ and of $B_n^{(k)}(x)$, $1\le k\le n$, are squarefree. A prime $p$ divides the first of
+them if and only if $s_p(n)\ge p$, and the second if and only if $p\nmid(n)_k$ and $s_p(n-k+1)\ge p$.
 \end{proposition}
 \begin{proof}
-By the theorem of von Staudt and Clausen $B_j$ is $p$-integral for $j\notin J_p$ and has $p$-adic valuation $-1$ for $j\in J_p$, where $J_p$ is the set of the positive multiples of $p-1$ if $p\ge3$, and $J_2=\{1,2,4,6,8,\dots\}$.
-Write $j\preceq N$ if no base-$p$ digit of $j$ exceeds the corresponding digit of $N$. By Lucas's theorem $p\nmid\binom Nj$ if and only if $j\preceq N$. In this case $s_p(j)\le s_p(N)$, with equality only for $j=N$. We claim that, for $N\ge0$,
+By the theorem of von Staudt and Clausen $B_j$ is $p$-integral for $j\notin J_p$ and has $p$-adic valuation $-1$ for $j\in J_p$,
+where $J_p$ is the set of the positive multiples of $p-1$ if $p\ge3$, and $J_2=\{1,2,4,6,8,\dots\}$. In particular all
+coefficients below have denominators with $p$-adic valuation at most $1$, so the denominators are squarefree.
+Write $j\preceq N$ if no base-$p$ digit of $j$ exceeds the corresponding digit of $N$. By Lucas's theorem $p\nmid\binom Nj$ if and only
+if $j\preceq N$. In this case $s_p(j)\le s_p(N)$, with equality only for $j=N$. We claim that, for $N\ge0$,
 \begin{itemize}
 \item[(a)] there is $j\in J_p$ with $j\preceq N$ if and only if $s_p(N)\ge p-1$;
 \item[(b)] there is $j\in J_p$ with $j\preceq N$ and $j\ne N$ if and only if $s_p(N)\ge p$.
 \end{itemize}
-Indeed, if $j\in J_p$, then $s_p(j)\equiv j\equiv0\pmod{p-1}$ and $s_p(j)>0$, so $s_p(j)\ge p-1$; this shows that the conditions are necessary. If $s_p(N)\ge p-1$ we can choose $j\preceq N$ with $s_p(j)=p-1$. Then $j$ is a positive multiple of $p-1$, and for $p=2$ it is a power of $2$. So $j\in J_p$, and if $s_p(N)\ge p$ then $j\ne N$.
+Indeed, if $j\in J_p$, then $s_p(j)\equiv j\equiv0\pmod{p-1}$ and $s_p(j)>0$, so $s_p(j)\ge p-1$; this shows that the conditions are
+necessary. If $s_p(N)\ge p-1$ we can choose $j\preceq N$ with $s_p(j)=p-1$. Then $j$ is a positive multiple of $p-1$, and for $p=2$ it is
+a power of $2$. So $j\in J_p$, and if $s_p(N)\ge p$ then $j\ne N$.
 
 Now $B_n(x)-B_n=\sum_{j<n}\binom njB_jx^{n-j}$, and the first claim follows from (b) with $N=n$. Also
 \[
 B_n^{(k)}(x)=(n)_kB_{n-k}(x)=\sum_{j\le n-k}(n)_k\binom{n-k}jB_jx^{n-k-j}.
 \]
-If $p\mid(n)_k$, its coefficients are $p$-integral. If $p\nmid(n)_k$, then by (a) they are not all $p$-integral if and only if $s_p(n-k)\ge p-1$, and $p\nmid n-k+1$ implies $s_p(n-k+1)=s_p(n-k)+1$.
+If $p\mid(n)_k$, its coefficients are $p$-integral. If $p\nmid(n)_k$, then by (a) they are not all $p$-integral if and only if
+$s_p(n-k)\ge p-1$, and $p\nmid n-k+1$ implies $s_p(n-k+1)=s_p(n-k)+1$, as adding $1$ to $n-k$ causes no carry.
 \end{proof}
 
 \section{Proofs of the corollaries}
@@ -196,52 +244,102 @@ If $p\mid(n)_k$, its coefficients are $p$-integral. If $p\nmid(n)_k$, then by (a
 Let $m\ge1$ and $s=\fl{\sqrt m}$. We use two remarks.
 \begin{itemize}
 \item[(A)] If $p\mid\Dp_m$ then $p\nmid m$. Indeed, if $p>\sqrt m$ and $p\mid m$, then $s_p(m)=m/p<p$.
-\item[(B)] If $0\le j\le s+1$ then at most one prime $p>\sqrt m$ divides $m+j$, since two such primes have product at least $(s+1)(s+2)>s^2+2s+j\ge m+j$.
+\item[(B)] If $0\le j\le s+1$ then at most one prime $p>\sqrt m$ divides $m+j$, since two such primes have product at least
+$(s+1)(s+2)>s^2+2s+j\ge m+j$.
 \end{itemize}
 
 \begin{proof}[Proof of Corollary \ref{cor:first}]
-By Proposition \ref{prop:den}, $B_n'(x)\in\ZZ[x]$ if and only if there is no prime $p\nmid n$ with $s_p(n)\ge p$. By Theorem \ref{thm:main} and (A) there is one if $n>192$. The $n\le192$ were checked directly.
+By Proposition \ref{prop:den}, $B_n'(x)\in\ZZ[x]$ if and only if there is no prime $p\nmid n$ with $s_p(n)\ge p$. By
+Theorem \ref{thm:main} and (A) there is one if $n>192$. The $n\le192$ were checked directly. (This is the argument of
+\cite[Theorem 3]{K24}.)
 \end{proof}
 
 \begin{proof}[Proof of Corollary \ref{cor:R}]
-If the denominator of $B_n(x)-B_n$ equals the radical of $n+1$, then by Proposition \ref{prop:den} all primes dividing $\Dp_n$ divide $n+1$. So $\omega(\Dp_n)\le1$ by (B), and $n\le1080$ by Theorem \ref{thm:main}. These $n$ were checked directly.
+If the denominator of $B_n(x)-B_n$ equals $\operatorname{rad}(n+1)$, then by Proposition \ref{prop:den} all primes dividing $\Dp_n$
+divide $n+1$. So $\omega(\Dp_n)\le1$ by (B), and $n\le1080$ by Theorem \ref{thm:main}. These $n$ were checked directly.
 \end{proof}
 
 \begin{proof}[Proof of Corollary \ref{cor:higher}]
-All $n<k$ belong to $\Sb_k$. For $n\ge k$ put $m=n-k+1$. By Proposition \ref{prop:den}, $n\in\Sb_k$ if and only if every prime $p$ with $s_p(m)\ge p$ divides $m(m+1)\cdots(m+k-1)$.
-Suppose that $k\le\fl{\sqrt m}+2$ and $\omega(\Dp_m)\ge k$. By (A) no prime dividing $\Dp_m$ divides $m$, and by (B) each of $m+1,\dots,m+k-1$ is divisible by at most one of them, so that $n\notin\Sb_k$.
-By \eqref{eq:large} and \eqref{eq:middle} this applies, for all $k\le24$, to all $m\ge1500^2$ (and for $k\le8$, by Theorem \ref{thm:main}, to all $m>b_k$). The remaining $m$ were checked.
+All $n<k$ belong to $\Sb_k$. For $n\ge k$ put $m=n-k+1$. By Proposition \ref{prop:den}, $n\in\Sb_k$ if and only if every prime $p$ with
+$s_p(m)\ge p$ divides $m(m+1)\cdots(m+k-1)$.
+Suppose that $k\le\fl{\sqrt m}+2$ and $\omega(\Dp_m)\ge k$. By (A) no prime dividing $\Dp_m$ divides $m$, and by (B) each of
+$m+1,\dots,m+k-1$ is divisible by at most one of them, so that $n\notin\Sb_k$.
+By \eqref{eq:large} and \eqref{eq:middle} this applies, for all $k\le24$, to all $m\ge1500^2$ (and for $k\le8$, by
+Theorem \ref{thm:main}, to all $m>b_k$). The remaining $m$ were checked.
 \end{proof}
 
 \begin{proof}[Proof of Corollary \ref{cor:K17}]
-The first claim is Theorem \ref{thm:main}. If $n>1080$ then $\omega(\Dp_n)\ge2$, hence $P_n\ge\fl{\sqrt n}+2>\sqrt n+1/\sqrt n=(n+1)/\sqrt n$. For $192<n\le1080$ the second claim was checked directly.
+The first claim is Theorem \ref{thm:main}. If $n>1080$ then $\omega(\Dp_n)\ge2$, hence
+$P_n\ge\fl{\sqrt n}+2>\sqrt n+1/\sqrt n=(n+1)/\sqrt n$. For $192<n\le1080$ the second claim was checked directly.
 \end{proof}
 
 \begin{proof}[Proof of Corollary \ref{cor:alek}]
-If $k>192$ take $p>\sqrt k$ as in Theorem \ref{thm:main}; then $k$ has at most two digits in base $p$, and $p\ge3$. For $78<k\le192$ the claim was checked directly.
+If $k>192$ take $p>\sqrt k$ as in Theorem \ref{thm:main}; then $k$ has at most two digits in base $p$, and $p\ge3$. For $78<k\le192$
+the claim was checked directly.
 \end{proof}
 
 \begin{remark}
-The small cases were checked with Proposition \ref{prop:den}. For Corollary \ref{cor:R}, and for Corollaries \ref{cor:first} and \ref{cor:higher} with $k\le6$, they were also confirmed from exact values of the Bernoulli numbers, without using Proposition \ref{prop:den}; by Theorem \ref{thm:main} and the proofs above it suffices to consider $n\le1080$ and $n\le5081$, respectively.
+The small cases were checked with Proposition \ref{prop:den}. For Corollary \ref{cor:R}, and for Corollaries \ref{cor:first}
+and \ref{cor:higher} with $k\le6$, they were also confirmed from exact values of the Bernoulli numbers, without using
+Proposition \ref{prop:den}; by Theorem \ref{thm:main} and the proofs above it suffices to consider $n\le1080$ and $n\le5081$,
+respectively.
 \end{remark}
 
-\section{Formal verification}
+\section{Formal verification}\label{sec:formal}
 
-All arguments of this paper except the estimate \eqref{eq:RS} have been formalized in Lean~4 with Mathlib (version~4.36.0); the code accompanies the paper.
-The estimate \eqref{eq:RS} is not available in Mathlib. It enters the formal proof as an explicit hypothesis, required only for $y\ge4\cdot10^6$, and not as an axiom; the formal statements are of the form ``if \eqref{eq:RS} holds for $y\ge4\cdot10^6$, then \dots''. Apart from this hypothesis the formal proofs use only the standard axioms of Lean.
-In the formalization the constant $4$ in Lemma~\ref{lem:bad} is replaced by $6$, Proposition~\ref{prop:den} is derived from the theorem of von Staudt and Clausen and from Kummer's theorem as they are stated in Mathlib, and every computation is carried out by Lean's kernel (no compiled code is trusted). For $n<1.6\cdot10^{13}$ this computation shows that there are at least three primes $p>\sqrt n$ with $s_p(n)\ge p$ whenever $n\ge2015$; so Theorem~\ref{thm:main} is formally verified without any hypothesis for $n<1.6\cdot10^{13}$.
-The formal version of Corollary~\ref{cor:R} is stated exactly as the statement \texttt{OeisA195441.conjecture} of the \texttt{formal-conjectures} project.
+Most of this paper has been formalized in Lean~4 with Mathlib (version~4.36.0). The Lean code, and the programs and the script
+mentioned in Section~4, are available at \url{https://github.com/xZinio/kellner-bernoulli}; the version described here is tagged
+\texttt{v2}. Table~\ref{tab:formal} lists what the formal proofs cover.
+
+The estimate \eqref{eq:RS} is not available in Mathlib, and we have not formalized it. It enters the formal proofs as an explicit
+hypothesis \lean{ThetaBound}, namely $|\vartheta(y)-y|\le y/(40\log y)$ for all real $y\ge4\cdot10^6$, and not as an axiom; Lean checks
+that \eqref{eq:RS}, and also the bound of Dusart quoted in Section~3, imply \lean{ThetaBound}. Apart from this hypothesis the formal
+proofs use only the standard axioms of Lean (\lean{propext}, \lean{Classical.choice}, \lean{Quot.sound}); a script in the repository
+checks this for every declaration and fails otherwise. Every computation in the formal proofs is carried out by Lean's kernel
+(\lean{decide +kernel}); no compiled code is trusted.
+
+The formal proof of Theorem~\ref{thm:main} shows only $\omega(\Dp_n)\ge3$ for $n>2014$, which is what the formal corollaries need.
+For $n\ge(4\cdot10^6)^2$ it uses \lean{ThetaBound} in the argument of Section~3, adapted to $s\ge4\cdot10^6$. For $2015\le n<1.6\cdot10^{13}$
+it replaces the computation of Section~4 by a kernel computation: a chain of primes covering $n<10^8$, and for
+$9973\le s<4\cdot10^6$ sixteen primes in an interval $(s,s+U]$ with $U^2<4(s+U)$, so that Lemma~\ref{lem:bad} leaves at least
+five of them good. Lemmas~\ref{lem:one} and~\ref{lem:bad} and Proposition~\ref{prop:den} are formalized as stated (with the
+denominator of a polynomial defined as above). The statement \lean{oeis_A195441} has the same definition and the same conclusion as
+the statement \lean{OeisA195441.conjecture} of the \lean{formal-conjectures} project, but it carries the hypothesis \lean{ThetaBound};
+so it does not settle that formal statement unconditionally.
+
+\begin{table}[ht]
+\small
+\caption{What is formally verified. ``Hyp.'': proved assuming \lean{ThetaBound}; for Theorem~\ref{thm:main} also without it for
+$n<1.6\cdot10^{13}$. ``Comp.'': established by the programs of Section~4 and the Remark in Section~6 only.}\label{tab:formal}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.7cm}>{\raggedright\arraybackslash}p{9.3cm}l@{}}
+Result & Lean declarations & Status\\ \hline
+Lemmas \ref{lem:one}, \ref{lem:bad} & \lean{bad_imp}, \lean{div_pred_le}, \lean{card_bad_mul_lt} & proved\\
+Theorem \ref{thm:main}, first statement & \lean{kellner_conjecture}, \lean{kellner_conjecture_of_lt} & hyp.\\
+Theorem \ref{thm:main}, $k\le3$, and $\omega(\Dp_{b_k})=k-1$ for $k\le3$ & \lean{card_goodPrimes_ge_of_thetaBound}, \lean{card_goodPrimes_ge_of_lt}, \lean{card_goodPrimes_thresholds} & hyp.\\
+Theorem \ref{thm:main}, $4\le k\le8$; \eqref{eq:large}; \eqref{eq:middle} & --- & comp.\\
+Proposition \ref{prop:den} & \lean{squarefree_polyDen_bernoulli_sub}, \lean{prime_dvd_polyDen_bernoulli_sub_iff}, \lean{squarefree_polyDen_iterate_derivative}, \lean{prime_dvd_polyDen_iterate_derivative_iff} & proved\\
+Corollary \ref{cor:first} & \lean{bernoulli_derivative_intCoeffs_iff} & hyp.\\
+Corollary \ref{cor:R} & \lean{bernoulli_sub_den_eq_radical_iff}, \lean{oeis_A195441} & hyp.\\
+Corollary \ref{cor:higher}, sets $\Sb_2$, $\Sb_3$ & \lean{bernoulli_iterate_derivative_two}, \lean{bernoulli_iterate_derivative_three} & hyp.\\
+Corollary \ref{cor:higher}, table for $4\le k\le12$ & --- & comp.\\
+Corollaries \ref{cor:K17}, \ref{cor:alek} & \lean{kellner2017}, \lean{alekseyev} & hyp.\\
+\end{tabular}
+\end{table}
 
 \subsection*{Acknowledgement}
-This work was carried out with the assistance of a large language model (Claude, by Anthropic), which was used for the proof, the computations, the Lean formalization and the writing. The paper has not yet been refereed. The programs and the Lean code are available with it.
+This work was carried out with the assistance of a large language model (Claude, by Anthropic), which was used for the proof, the
+computations, the Lean formalization and the writing. In particular, the two programs mentioned in Section~4 were written separately
+but with the same assistance, so they are not independent in authorship. The paper has not yet been refereed by a journal.
 
-\begin{thebibliography}{9}
+\begin{thebibliography}{99}
+\bibitem{B17} O. Bordell\`es, \emph{On a conjecture of B. C. Kellner}, preprint (2017), arXiv:1705.06128.
 \bibitem{BLMS} O. Bordell\`es, F. Luca, P. Moree, I. E. Shparlinski, \emph{Denominators of Bernoulli polynomials}, Mathematika 64 (2018), 519--541.
 \bibitem{BKLNW} S. Broadbent, H. Kadiri, A. Lumley, N. Ng, K. Wilk, \emph{Sharper bounds for the Chebyshev function $\theta(x)$}, Math. Comp. 90 (2021), 2281--2315; arXiv:2002.11068.
 \bibitem{D18} P. Dusart, \emph{Explicit estimates of some functions over primes}, Ramanujan J. 45 (2018), 227--251.
 \bibitem{K17} B. C. Kellner, \emph{On a product of certain primes}, J. Number Theory 179 (2017), 126--141; arXiv:1705.04303.
 \bibitem{K24} B. C. Kellner, \emph{On the finiteness of Bernoulli polynomials whose derivative has only integral coefficients}, J. Integer Seq. 27 (2024), Article 24.2.8; arXiv:2310.01325.
 \bibitem{KS} B. C. Kellner, J. Sondow, \emph{Power-sum denominators}, Amer. Math. Monthly 124 (2017), 695--709; arXiv:1705.03857.
+\bibitem{OEIS} The On-Line Encyclopedia of Integer Sequences, \url{https://oeis.org}; entry A094960, comments of M. Alekseyev (June 4, 2012 and February 16, 2021).
 \bibitem{RS} J. B. Rosser, L. Schoenfeld, \emph{Sharper bounds for the Chebyshev functions $\theta(x)$ and $\psi(x)$}, Math. Comp. 29 (1975), 243--269.
 \end{thebibliography}
 \end{document}

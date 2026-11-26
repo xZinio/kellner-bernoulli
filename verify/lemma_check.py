@@ -3,7 +3,7 @@
 #  (B) for m>=s+2:  q(m-1)-q(m) in {0,1};  m good <=> q(m-1)-q(m)=1 and (m-1) does not divide n
 #  (C) #{m in [s+2,s+U]: q(m-1)=q(m)} = (U-1)-(q(s+1)-q(s+U)) <  2 + U^2/(s+U)
 #  (D) #{d | n : s+1<=d<=s+U-1} <= 1 + U^2/(s+U)
-#  (E) total bad in [s+1,s+U] <= 4 + 2U^2/(s+U)
+#  (E) total bad in [s+1,s+U] <  4 + 2U^2/(s+U)
 import math, random
 def digsum(n,b):
     t=0
@@ -25,7 +25,7 @@ def check(n,U,full):
         bad+=not good
         assert cC*(s+u) < 2*(s+u)+u*u
         assert cD*(s+u) <= (s+u)+u*u
-        assert bad*(s+u) <= 4*(s+u)+2*u*u
+        assert bad*(s+u) < 4*(s+u)+2*u*u
     return bad
 mx=0
 for n in range(1,30000): check(n,4*math.isqrt(n)+6,n<3000)

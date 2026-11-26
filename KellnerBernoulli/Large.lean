@@ -14,9 +14,10 @@ namespace KellnerBernoulli
 
 /-- `|θ(x) - x| ≤ x / (40 log x)` for `x ≥ 4 * 10 ^ 6`, where `θ(x) = ∑_{p ≤ x} log p`.
 
-Rosser and Schoenfeld (1975) proved this, with strict inequality, for all `x ≥ 678407`.
-It also follows from `|θ(x) - x| < 0.2 x / log² x` for `x ≥ 3594641`
-(Dusart, Ramanujan J. 45 (2018), Theorem 4.2), because `log x ≥ 8`. -/
+Rosser and Schoenfeld proved this, with strict inequality, for all `x ≥ 678407` (Math. Comp. 29 (1975),
+Corollary 2, (5.7); see also Broadbent, Kadiri, Lumley, Ng and Wilk, Math. Comp. 90 (2021), Table 2).
+It also follows from `|θ(x) - x| < 0.2 x / log² x` for `x ≥ 3594641` (Dusart, Ramanujan J. 45 (2018),
+Theorem 4.2), because `log x ≥ 8`.  Both published results are unconditional. -/
 def ThetaBound : Prop :=
   ∀ x : ℝ, 4000000 ≤ x → |θ x - x| ≤ x / (40 * Real.log x)
 

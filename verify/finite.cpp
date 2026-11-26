@@ -1,14 +1,18 @@
-// Integer arithmetic only.   omega(D_n^+) = #{ primes p > sqrt n : s_p(n) >= p }.
+// Integer arithmetic only (no floating point).   omega(D_n^+) = #{ primes p > sqrt n : s_p(n) >= p }.
 //   ./finite exact S0 K        for n < S0^2: all n with omega(D_n^+) < K, from the definition (K <= 8 in the paper)
 //   ./finite range S0 S1 m     for S0 <= s < S1: for the first m primes p > s, the n in [s^2, s^2+2s] for which p is bad
 //                              (s_p(n) < p) form the intervals [qp, qp+p-1-q]; prints min over n of  m - #bad
+//                              and the first s where the minimum is attained.  Sweep: each interval [l, h] gives
+//                              the events (l, +1) and (h+1, -1); events are sorted by coordinate, and at equal
+//                              coordinates removals (-1) come first, so the running sum is the number of
+//                              intervals containing the current coordinate.
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cmath>
 #include <vector>
 #include <algorithm>
 using namespace std; typedef long long ll;
+static ll isqrt(ll x){ ll lo=0, hi=3037000499LL; while(lo<hi){ ll mid=lo+(hi-lo+1)/2; if(mid<=x/mid) lo=mid; else hi=mid-1; } return lo; }  // floor(sqrt(x)), x >= 0
 static int exact(ll S0, int K){
   ll LIM=S0*S0+10; vector<bool> comp(LIM+1,false); vector<int> pr;
   for(ll i=2;i<=LIM;i++) if(!comp[i]){ pr.push_back((int)i); for(ll j=i*i;j<=LIM;j+=i) comp[j]=true; }
@@ -22,7 +26,7 @@ static int exact(ll S0, int K){
   ll mx=0; for(int k=0;k<K;k++){ if(!few[k].empty()) mx=max(mx,few[k].back()); printf("b_%d = %lld\n",k+1,mx); }
   return 0; }
 static int range(ll S0, ll S1, int m){
-  ll HI=S1+200000, sq=(ll)sqrtl((long double)HI)+2; vector<char> c(sq+1,0); vector<ll> base;
+  ll HI=S1+200000, sq=isqrt(HI)+1; vector<char> c(sq+1,0); vector<ll> base;
   for(ll i=2;i<=sq;i++) if(!c[i]){ base.push_back(i); for(ll j=i*i;j<=sq;j+=i) c[j]=1; }
   const ll SEG=1<<20; int worst=1<<30; ll ws=0; vector<char> sv; vector<ll> pr; vector<pair<ll,int>> ev;
   for(ll a=S0;a<S1;a+=SEG){ ll b=min(a+SEG,S1), lo=a+1, hi=b+200000;

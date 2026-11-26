@@ -29,7 +29,7 @@ theorem mem_goodPrimes_iff_digits {n p : ℕ} :
     unfold digitSum at this
     rw [← this]; exact h3
 
-/-- Many primes in `(s, s + U]` give three good primes. -/
+/-- Many primes in `(s, s + U]` give three good primes (by Lemma 8, `card_bad_mul_lt`). -/
 theorem three_good_of_finset {n : ℕ} (hn : 1 ≤ n) {U : ℕ} (hU : 1 ≤ U) (T : Finset ℕ)
     (hT : ∀ p ∈ T, p.Prime ∧ Nat.sqrt n < p ∧ p ≤ Nat.sqrt n + U)
     (h : 2 * U ^ 2 + 8 * (Nat.sqrt n + U) < T.card * (Nat.sqrt n + U)) :
@@ -43,7 +43,7 @@ theorem three_good_of_finset {n : ℕ} (hn : 1 ≤ n) {U : ℕ} (hU : 1 ≤ U) (
     · rw [h0] at hs2; omega
     · exact h0
   set B := (Finset.Ioc s (s + U)).filter (fun m => Bad n m) with hB
-  have hBc := card_bad_mul_le hs1 hs2 hspos hU
+  have hBc := card_bad_mul_lt hs1 hs2 hspos hU
   rw [← hB] at hBc
   have hsub : T \ B ⊆ goodPrimes n := by
     intro p hp
@@ -107,8 +107,9 @@ theorem one_good (h : ThetaBound) {n : ℕ} (hn : 192 < n) : 1 ≤ (goodPrimes n
   · exact one_good_of_lt hn (by omega)
   · exact le_trans (by norm_num) (three_good h h')
 
-/-- **Kellner's conjecture** ([Kellner 2017, Conjecture 1], [Kellner 2024, Conjecture 2(i)]):
-for every `n > 192` there is a prime `p > √n` whose base-`p` digit sum of `n` is at least `p`. -/
+/-- **Kellner's conjecture** ([Kellner 2017, Conjecture 1, first inequality],
+[Kellner 2024, Conjecture 2(i)]): for every `n > 192` there is a prime `p > √n` whose base-`p` digit sum of
+`n` is at least `p`. -/
 theorem kellner_conjecture (h : ThetaBound) {n : ℕ} (hn : 192 < n) :
     ∃ p, p.Prime ∧ n < p ^ 2 ∧ p ≤ (Nat.digits p n).sum := by
   obtain ⟨p, hp⟩ := Finset.card_pos.mp (one_good h hn)
@@ -144,5 +145,36 @@ theorem kellner_exceptions (h : ThetaBound) {n : ℕ} (hn : 1 ≤ n) :
       omega
   · rw [goodPrimes_eq_empty_iff hn h1]
     simp [exceptions]
+
+/-! ## Theorem 1 for `k ≤ 3`
+
+`(goodPrimes n).card` is `ω(D_n^+)`, the number of primes `p > √n` with `s_p(n) ≥ p`
+(`mem_goodPrimes_iff_digits`). -/
+
+/-- **Theorem 1 for `k ≤ 3`**, unconditionally for `n < 1.6 * 10 ^ 13`: `ω(D_n^+) ≥ k` if `n > b_k`, where
+`b_1 = 192`, `b_2 = 1080`, `b_3 = 2014`. -/
+theorem card_goodPrimes_ge_of_lt {n : ℕ} (hn : n < 16 * 10 ^ 12) :
+    (192 < n → 1 ≤ (goodPrimes n).card) ∧ (1080 < n → 2 ≤ (goodPrimes n).card) ∧
+      (2014 < n → 3 ≤ (goodPrimes n).card) := by
+  have h3 : 2014 < n → 3 ≤ (goodPrimes n).card := fun h =>
+    three_good_of_lt_sq h (by norm_num at hn ⊢; omega)
+  refine ⟨fun h => ?_, fun h => ?_, h3⟩
+  · rcases Nat.lt_or_ge n 2015 with h' | h'
+    · exact one_good_of_lt h (by omega)
+    · exact le_trans (by norm_num) (h3 (by omega))
+  · rcases Nat.lt_or_ge n 2015 with h' | h'
+    · exact two_good_of_lt h (by omega)
+    · exact le_trans (by norm_num) (h3 (by omega))
+
+/-- **Theorem 1 for `k ≤ 3`**, for all `n`, assuming `ThetaBound`. -/
+theorem card_goodPrimes_ge_of_thetaBound (h : ThetaBound) {n : ℕ} :
+    (192 < n → 1 ≤ (goodPrimes n).card) ∧ (1080 < n → 2 ≤ (goodPrimes n).card) ∧
+      (2014 < n → 3 ≤ (goodPrimes n).card) :=
+  ⟨one_good h, two_good h, fun hn => three_good h hn⟩
+
+/-- The thresholds `b_1 = 192`, `b_2 = 1080`, `b_3 = 2014` of Theorem 1 are best possible. -/
+theorem card_goodPrimes_thresholds :
+    (goodPrimes 192).card = 0 ∧ (goodPrimes 1080).card = 1 ∧ (goodPrimes 2014).card = 2 :=
+  ⟨card_goodPrimes_192, card_goodPrimes_1080, card_goodPrimes_2014⟩
 
 end KellnerBernoulli

@@ -1,7 +1,8 @@
 # Direct check from exact Bernoulli numbers; does not use the digit-sum criterion.
 #   (a) B_n^{(k)}(x) in Z[x]           for k = 1..6 and all n <= N
-#   (b) denom(B_n(x) - B_n) = rad(n+1) for all n <= N
-# The results are compared with the sets computed from the criterion (sets.py).
+#   (b) denom(B_n(x) - B_n) = rad(n+1) for all n <= min(N, 1100)  (the paper needs n <= 1080)
+# The sets in (a) are compared with the sets computed from the criterion (Proposition 9), and both (a) and
+# (b) with the values in the paper; the script exits with status 1 on any difference.
 import math, sys
 from fractions import Fraction
 N = int(sys.argv[1]) if len(sys.argv) > 1 else 1100
@@ -66,10 +67,16 @@ def crit(n, k):
     m = n - k + 1; ff = math.perm(n, k)
     return all(ff % p == 0 for p in PR if p <= m and sd(m, p) >= p)
 
+TABLE = {1: (10, 60), 2: (29, 190), 3: (59, 392), 4: (88, 393), 5: (125, 904), 6: (164, 905)}
+def check(cond, msg):
+    if not cond: print('CHECK FAILED:', msg); sys.exit(1)
 for k in range(1, 7):
     d = [n for n in range(1, N + 1) if integral(n, k)]
     c = [n for n in range(1, N + 1) if crit(n, k)]
     print('k=%d: direct set has %d elements, max %d; equals set from criterion: %s' % (k, len(d), max(d), d == c), flush=True)
+    check(d == c, 'k=%d: direct set differs from the criterion' % k)
+    check(N < 5100 or (len(d), max(d)) == TABLE[k], 'k=%d: size or maximum differs from the paper' % k)
 NR = min(N, 1100)
 R = [n for n in range(1, NR + 1) if denom_minus_const(n) == rad(n + 1)]
 print('denom(B_n(x)-B_n) = rad(n+1), n <= %d:' % NR, R)
+check(R == [n for n in [3, 5, 8, 9, 11, 27, 29, 35, 59] if n <= NR], 'Corollary 3')

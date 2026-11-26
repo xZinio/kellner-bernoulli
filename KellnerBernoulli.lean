@@ -9,3 +9,4 @@ import KellnerBernoulli.Criterion
 import KellnerBernoulli.SmallCases
 import KellnerBernoulli.Main
 import KellnerBernoulli.Corollaries
+import KellnerBernoulli.Denominators

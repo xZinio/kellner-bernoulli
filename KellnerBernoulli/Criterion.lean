@@ -79,7 +79,7 @@ theorem not_dvd_bernoulli_den {p j : ℕ} (hp : p.Prime) (hJ : ¬ Jset p j) :
       rcases (Prime.dvd_finsetProd_iff hp.prime _).mp h2 with ⟨q, hqS, hq⟩
       rw [hS, Finset.mem_filter] at hqS
       have hq' : ((1 : ℚ) / q).den = q := by
-        rw [one_div, Rat.inv_natCast_den, if_neg hqS.2.1.ne_zero]
+        rw [one_div, Rat.inv_natCast_den, ite_eq_right hqS.2.1.ne_zero]
       rw [hq'] at hq
       have hpq : p = q := (Nat.prime_dvd_prime_iff_eq hp hqS.2.1).mp hq
       exact hpk (hpq ▸ hqS.2.2)
@@ -203,7 +203,7 @@ theorem intCoeffs_iff_mem_lifts (P : Polynomial ℚ) :
     rw [← hz]
     simp
 
-theorem descFactorial_mul_choose (n k m : ℕ) (h : m + k ≤ n) :
+theorem descFactorial_mul_choose (n k m : ℕ) (_h : m + k ≤ n) :
     (m + k).descFactorial k * n.choose (m + k) = n.descFactorial k * (n - k).choose m := by
   rw [Nat.descFactorial_eq_factorial_mul_choose, Nat.descFactorial_eq_factorial_mul_choose,
     mul_assoc, mul_assoc, mul_comm ((m + k).choose k), Nat.choose_mul (n := n) (by omega : k ≤ m + k)]
@@ -240,7 +240,7 @@ theorem intCoeffs_iterate_derivative_iff (n k : ℕ) (hk : k ≤ n) :
     rw [not_or, not_lt] at hcon
     obtain ⟨j, hj, hJ, hdiv⟩ := (exists_Jset_iff hp (n - k) (n.descFactorial k)).mpr hcon
     have hc := h (n - k - j)
-    rw [coeff_iterate_derivative_bernoulli, if_pos (by omega),
+    rw [coeff_iterate_derivative_bernoulli, ite_eq_left (by omega),
       show n - k - (n - k - j) = j by omega, Nat.choose_symm (by omega)] at hc
     exact (den_eq_one_iff_forall_prime _).mp hc p hp
       ((dvd_den_mul_bernoulli_iff hp _ _).mpr ⟨hJ, hdiv⟩)
@@ -279,7 +279,7 @@ theorem intCoeffs_iterate_derivative_iff' (n k : ℕ) (hk1 : 1 ≤ k) (hk : k �
 theorem intCoeffs_iterate_derivative_of_lt (n k : ℕ) (h : n < k) :
     IntCoeffs (Polynomial.derivative^[k] (Polynomial.bernoulli n)) := by
   intro m
-  rw [coeff_iterate_derivative_bernoulli, if_neg (by omega)]
+  rw [coeff_iterate_derivative_bernoulli, ite_eq_right (by omega)]
   rfl
 
 end KellnerBernoulli

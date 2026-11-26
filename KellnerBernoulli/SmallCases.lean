@@ -87,32 +87,45 @@ theorem card_goodPrimes_le {n : ℕ} (hn : n < 2030) :
   simp only [Bool.and_eq_true, Nat.blt_eq, Nat.ble_eq]
   exact hp.2
 
-/-- The `n ≤ 2014` with fewer than three good primes, and how many they have. -/
+/-- Lower bounds for the number of good primes for `n ≤ 2014`: at least one if `n > 192` and at least
+two if `n > 1080`.  (The exact values at `n = 192, 1080, 2014` are `card_goodPrimes_192` etc. below.) -/
 def goodTable : Bool :=
   (List.range 2015).all fun n =>
-    Nat.ble (bif Nat.blt 2014 n then 3 else bif Nat.blt 1080 n then 2 else bif Nat.blt 192 n then 1
-      else 0) (countR (goodB n) Data.trial)
+    Nat.ble (bif Nat.blt 1080 n then 2 else bif Nat.blt 192 n then 1 else 0)
+      (countR (goodB n) Data.trial)
 
 theorem goodTable_true : goodTable = true := by decide +kernel
 
 theorem two_good_of_lt {n : ℕ} (h1 : 1080 < n) (h2 : n ≤ 2014) : 2 ≤ (goodPrimes n).card := by
   have h := List.all_eq_true.mp goodTable_true n (List.mem_range.mpr (by omega))
-  have e1 : Nat.blt 2014 n = false := Bool.eq_false_iff.mpr (fun h => by rw [Nat.blt_eq] at h; omega)
-  have e2 : Nat.blt 1080 n = true := Nat.blt_eq.mpr (by omega)
-  rw [e1, e2] at h
-  simp only [Bool.cond_false, Bool.cond_true, Nat.ble_eq] at h
+  have e1 : Nat.blt 1080 n = true := Nat.blt_eq.mpr (by omega)
+  rw [e1] at h
+  simp only [Bool.cond_true, Nat.ble_eq] at h
   exact h.trans (card_goodPrimes_ge n)
 
 theorem one_good_of_lt {n : ℕ} (h1 : 192 < n) (h2 : n ≤ 2014) : 1 ≤ (goodPrimes n).card := by
   rcases Nat.lt_or_ge 1080 n with h3 | h3
   · exact le_trans (by norm_num) (two_good_of_lt h3 h2)
   have h := List.all_eq_true.mp goodTable_true n (List.mem_range.mpr (by omega))
-  have e1 : Nat.blt 2014 n = false := Bool.eq_false_iff.mpr (fun h => by rw [Nat.blt_eq] at h; omega)
-  have e2 : Nat.blt 1080 n = false := Bool.eq_false_iff.mpr (fun h => by rw [Nat.blt_eq] at h; omega)
-  have e3 : Nat.blt 192 n = true := Nat.blt_eq.mpr (by omega)
-  rw [e1, e2, e3] at h
+  have e1 : Nat.blt 1080 n = false := Bool.eq_false_iff.mpr (fun h => by rw [Nat.blt_eq] at h; omega)
+  have e2 : Nat.blt 192 n = true := Nat.blt_eq.mpr (by omega)
+  rw [e1, e2] at h
   simp only [Bool.cond_false, Bool.cond_true, Nat.ble_eq] at h
   exact h.trans (card_goodPrimes_ge n)
+
+/-- For `n < 2030` the number of good primes is computed exactly by the list `Data.trial`. -/
+theorem card_goodPrimes_eq {n : ℕ} (hn : n < 2030) :
+    (goodPrimes n).card = countR (goodB n) Data.trial :=
+  le_antisymm (card_goodPrimes_le hn) (card_goodPrimes_ge n)
+
+theorem card_goodPrimes_192 : (goodPrimes 192).card = 0 := by
+  rw [card_goodPrimes_eq (by norm_num)]; decide +kernel
+
+theorem card_goodPrimes_1080 : (goodPrimes 1080).card = 1 := by
+  rw [card_goodPrimes_eq (by norm_num)]; decide +kernel
+
+theorem card_goodPrimes_2014 : (goodPrimes 2014).card = 2 := by
+  rw [card_goodPrimes_eq (by norm_num)]; decide +kernel
 
 /-- The exceptions: exactly these `n ≤ 192` have no good prime. -/
 def exceptions : List ℕ :=

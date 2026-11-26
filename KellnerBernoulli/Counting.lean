@@ -4,7 +4,8 @@ import Mathlib
 # The counting lemma
 
 For `n ≥ 1` and `s = ⌊√n⌋`, all but a few of the integers `m` slightly larger than `s` have
-base-`m` digit sum at least `m` (Lemmas 7 and 8 of the paper).
+base-`m` digit sum at least `m` (Lemmas 7 and 8 of the paper).  `card_bad_mul_lt` is Lemma 8 with the
+constant `4` of the paper: fewer than `4 + 2 U² / (s + U)` of the integers `s + 1, …, s + U` are bad.
 -/
 
 namespace KellnerBernoulli
@@ -94,16 +95,40 @@ theorem card_flat_add {n s : ℕ} (hs : n < (s + 1) * (s + 1)) (U : ℕ) :
     · have h' : n / (s + 1 + (U + 1)) = n / (s + 1 + U + 1) := by rw [← Nat.add_assoc]
       omega
 
-/-- Part (b) of Lemma 8: the divisors of `n` in `(s, s + U)`. -/
+/-- If `t² ≥ 4 n`, then `2 s E + n ≤ t E + s²` (where `s = ⌊√n⌋ < E`). -/
+theorem two_mul_le_of_sq {n s E t : ℕ} (hs1 : s * s ≤ n) (hs2 : n < (s + 1) * (s + 1))
+    (hE : s + 1 ≤ E) (ht : 4 * n ≤ t * t) : 2 * s * E + n ≤ t * E + s * s := by
+  by_contra hcon
+  obtain ⟨r, rfl⟩ : ∃ r, n = s * s + r := ⟨n - s * s, by omega⟩
+  have hr : r ≤ 2 * s := by nlinarith
+  have h1 : t * E < 2 * s * E + r := by omega
+  have h2 : (t * E) * (t * E) < (2 * s * E + r) * (2 * s * E + r) := Nat.mul_self_lt_mul_self h1
+  have h3 : 4 * (s * s + r) * (E * E) ≤ (t * E) * (t * E) := by
+    have := Nat.mul_le_mul_right (E * E) ht
+    calc 4 * (s * s + r) * (E * E) ≤ t * t * (E * E) := this
+      _ = (t * E) * (t * E) := by ring
+  have h4 : 4 * s * E + r ≤ 4 * E * E := by nlinarith
+  have h5 : r * (4 * s * E + r) ≤ r * (4 * E * E) := Nat.mul_le_mul_left r h4
+  nlinarith
+
+/-- Part (b) of Lemma 8: the divisors of `n` in `(s, E)`; at most `1 + (E - s)² / E` of them. -/
 theorem card_divisors_mul_le {n s E : ℕ} (hs1 : s * s ≤ n) (hs2 : n < (s + 1) * (s + 1))
     (hE : s + 1 ≤ E) :
     ((Finset.Ico (s + 1) E).filter (fun d => d ∣ n)).card * E + 2 * s * E
-      ≤ E * E + n + E := by
+      ≤ E * E + s * s + E := by
   classical
   set D := (Finset.Ico (s + 1) E).filter (fun d => d ∣ n) with hD
-  have hnpos : 0 < n ∨ n = 0 := by omega
-  -- the map `d ↦ d + n / d` is injective on `D` with values in `[2 s, E + n / E]`
-  have hmaps : ∀ d ∈ D, d + n / d ∈ Finset.Icc (2 * s) (E + n / E) := by
+  have hEpos : 0 < E := by omega
+  -- the lower end of the range of `d ↦ d + n / d`
+  obtain ⟨X, hX⟩ : ∃ X, 2 * s * E + n = X + s * s := ⟨2 * s * E + n - s * s, by omega⟩
+  set L := (X + E - 1) / E with hL
+  have hLE : X ≤ L * E := by
+    have h1 := Nat.div_add_mod (X + E - 1) E
+    have h2 := Nat.mod_lt (X + E - 1) hEpos
+    rw [← hL] at h1
+    have : X ≤ E * L := by omega
+    rw [Nat.mul_comm]; exact this
+  have hmaps : ∀ d ∈ D, d + n / d ∈ Finset.Icc L (E + n / E) := by
     intro d hd
     rw [hD, Finset.mem_filter, Finset.mem_Ico] at hd
     obtain ⟨⟨hd1, hd2⟩, hdvd⟩ := hd
@@ -112,38 +137,33 @@ theorem card_divisors_mul_le {n s E : ℕ} (hs1 : s * s ≤ n) (hs2 : n < (s + 1
     have hndiv : n / d = k := by rw [hk]; exact Nat.mul_div_cancel_left k hdpos
     rw [hndiv, Finset.mem_Icc]
     constructor
-    · by_contra hcon
-      replace hcon := not_le.mp hcon
-      have h1 : d + k + 1 ≤ 2 * s := hcon
-      have h2 : 4 * (d * k) ≤ (d + k) * (d + k) := by
-        zify
-        nlinarith [sq_nonneg ((d : ℤ) - k)]
-      nlinarith
-    · -- `(d + k - E) * E ≤ n`
-      have hkd : k ≤ d := by
+    · -- `(d + k)² ≥ 4 d k = 4 n`, so `(d + k) E + s² ≥ 2 s E + n`
+      have hsq : 4 * n ≤ (d + k) * (d + k) := by
+        rw [hk]; zify; nlinarith [sq_nonneg ((d : ℤ) - k)]
+      have key := two_mul_le_of_sq hs1 hs2 hE hsq
+      have key2 : X ≤ E * (d + k) := by rw [Nat.mul_comm]; omega
+      rw [hL, Nat.div_le_iff_le_mul_add_pred hEpos]
+      omega
+    · have hkd : k ≤ d := by
         by_contra hcon
         replace hcon := not_le.mp hcon
         nlinarith
-      have hle : d + k ≤ E + n / E := by
-        by_cases hdkE : d + k ≤ E
-        · exact le_trans hdkE (Nat.le_add_right _ _)
-        · replace hdkE := not_le.mp hdkE
-          have : (d + k - E) * E ≤ n := by
-            obtain ⟨j, hj⟩ : ∃ j, d + k = E + j := ⟨d + k - E, by omega⟩
-            have hjj : d + k - E = j := by omega
-            rw [hjj]
-            -- j = d + k - E, n = d k, E ≥ d + 1 > k
-            have hE' : k ≤ E := by omega
-            have : (E - d : ℤ) * (E - k) ≥ 0 := by
-              apply mul_nonneg <;> omega
-            zify at hj ⊢
-            rw [hk]
-            push_cast
-            nlinarith
-          have hEpos : 0 < E := by omega
-          have := (Nat.le_div_iff_mul_le hEpos).mpr this
-          omega
-      exact hle
+      by_cases hdkE : d + k ≤ E
+      · exact le_trans hdkE (Nat.le_add_right _ _)
+      · replace hdkE := not_le.mp hdkE
+        have : (d + k - E) * E ≤ n := by
+          obtain ⟨j, hj⟩ : ∃ j, d + k = E + j := ⟨d + k - E, by omega⟩
+          have hjj : d + k - E = j := by omega
+          rw [hjj]
+          have hE' : k ≤ E := by omega
+          have : (E - d : ℤ) * (E - k) ≥ 0 := by
+            apply mul_nonneg <;> omega
+          zify at hj ⊢
+          rw [hk]
+          push_cast
+          nlinarith
+        have := (Nat.le_div_iff_mul_le hEpos).mpr this
+        omega
   have hinj : Set.InjOn (fun d => d + n / d) (D : Set ℕ) := by
     intro d hd d' hd' heq
     rw [hD, Finset.coe_filter] at hd hd'
@@ -155,7 +175,6 @@ theorem card_divisors_mul_le {n s E : ℕ} (hs1 : s * s ≤ n) (hs2 : n < (s + 1
     have e1 : n / d = k := by rw [hk]; exact Nat.mul_div_cancel_left k hdpos
     have e2 : n / d' = k' := by rw [hk']; exact Nat.mul_div_cancel_left k' hdpos'
     simp only [e1, e2] at heq
-    -- `(d' - d) (d' - k) = 0` and `k ≤ s < d'`
     have hk_le : k ≤ s := by
       by_contra hcon
       replace hcon := not_le.mp hcon
@@ -168,27 +187,23 @@ theorem card_divisors_mul_le {n s E : ℕ} (hs1 : s * s ≤ n) (hs2 : n < (s + 1
     rcases mul_eq_zero.mp hzero with h | h
     · omega
     · omega
-  have hcard : D.card ≤ (Finset.Icc (2 * s) (E + n / E)).card :=
+  have hcard : D.card ≤ (Finset.Icc L (E + n / E)).card :=
     Finset.card_le_card_of_injOn _ hmaps hinj
   rw [Nat.card_Icc] at hcard
-  have hEpos : 0 < E := by omega
   have hmod : n / E * E ≤ n := Nat.div_mul_le_self n E
-  have h2s : 2 * s ≤ E + n / E + 1 ∨ D.card = 0 := by
-    by_cases h : 2 * s ≤ E + n / E + 1
-    · exact Or.inl h
-    · right; omega
-  rcases h2s with h2s | h0
-  · have : D.card + 2 * s ≤ E + n / E + 1 := by omega
-    nlinarith
-  · rw [h0]
+  rcases Nat.lt_or_ge (E + n / E + 1) L with hlt | hge
+  · have h0 : D.card = 0 := by omega
+    rw [h0]
     nlinarith [sq_nonneg ((E : ℤ) - s)]
+  · have h1 : D.card + L ≤ E + n / E + 1 := by omega
+    have h2 : (D.card + L) * E ≤ (E + n / E + 1) * E := Nat.mul_le_mul_right E h1
+    nlinarith [h2, hLE, hX, hmod]
 
-/-- Lemma 8: the number of bad `m` in `(s, s + U]` is at most `6 + 2 U² / (s + U)`.
-(The paper has the constant `4`; `6` is enough.) -/
-theorem card_bad_mul_le {n s U : ℕ} (hs1 : s * s ≤ n) (hs2 : n < (s + 1) * (s + 1))
+/-- Lemma 8: fewer than `4 + 2 U² / (s + U)` of the integers `s + 1, …, s + U` are bad. -/
+theorem card_bad_mul_lt {n s U : ℕ} (hs1 : s * s ≤ n) (hs2 : n < (s + 1) * (s + 1))
     (hspos : 1 ≤ s) (hU : 1 ≤ U) :
     ((Finset.Ioc s (s + U)).filter (fun m => Bad n m)).card * (s + U)
-      ≤ 2 * U ^ 2 + 6 * (s + U) := by
+      < 2 * U ^ 2 + 4 * (s + U) := by
   classical
   set E := s + U with hE
   set A := (Finset.Ioc (s + 1) (s + 1 + (U - 1))).filter (fun m => n / (m - 1) = n / m) with hA
@@ -221,7 +236,7 @@ theorem card_bad_mul_le {n s U : ℕ} (hs1 : s * s ≤ n) (hs2 : n < (s + 1) * (
           have : (D.image (· + 1)).card ≤ D.card := Finset.card_image_le
           omega
       _ = 1 + A.card + D.card := by omega
-  -- part (a)
+  -- part (a): fewer than `2 + U² / E` flat steps
   have ha := card_flat_add hs2 (U - 1)
   rw [← hA] at ha
   have hEq : s + 1 + (U - 1) = E := by omega
@@ -233,11 +248,11 @@ theorem card_bad_mul_le {n s U : ℕ} (hs1 : s * s ≤ n) (hs2 : n < (s + 1) * (
     nlinarith
   have hmod : n / E * E ≤ n := Nat.div_mul_le_self n E
   have hA' : A.card + s ≤ U + n / E := by omega
-  -- part (b)
+  have hAmul : A.card * E + s * E ≤ U * E + n := by nlinarith
+  -- part (b): at most `1 + U² / E` divisors
   have hb := card_divisors_mul_le (E := E) hs1 hs2 (by omega)
   rw [← hD] at hb
   have hn : n ≤ s * s + 2 * s := by nlinarith
-  have hAmul : A.card * E + s * E ≤ U * E + n := by nlinarith
   have h1 : ((Finset.Ioc s E).filter (fun m => Bad n m)).card * E
       ≤ (1 + A.card + D.card) * E := Nat.mul_le_mul_right _ hcard
   have hEs : E * E = s * s + 2 * s * U + U * U := by rw [hE]; ring

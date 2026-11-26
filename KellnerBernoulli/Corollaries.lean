@@ -3,12 +3,14 @@ import KellnerBernoulli.Main
 /-!
 # Consequences for Bernoulli polynomials
 
-* `bernoulli_derivative_intCoeffs_iff`: `B_n'(x) ∈ ℤ[x]` iff `n ∈ {1, 2, 4, 6, 10, 12, 28, 30, 36, 60}`
-  ([Kellner 2024, Conjecture 1], OEIS A094960);
+* `bernoulli_derivative_intCoeffs_iff`: for `n ≥ 1`, `B_n'(x) ∈ ℤ[x]` iff
+  `n ∈ {1, 2, 4, 6, 10, 12, 28, 30, 36, 60}` ([Kellner 2024, Conjecture 1(ii)], OEIS A094960);
 * `bernoulli_iterate_derivative_two` / `_three`: the same for the second and third derivative
   ([Kellner 2024, Conjecture 15], OEIS A366169, A366186);
 * `oeis_A195441`: `denom(B_n(x) - B_n) = rad(n + 1)` iff `n ∈ {3, 5, 8, 9, 11, 27, 29, 35, 59}`
-  ([Kellner 2024, Conjecture 11], OEIS A195441, in the formulation of `formal-conjectures`);
+  ([Kellner 2024, Conjecture 11], OEIS A195441), with the definition and conclusion of
+  `OeisA195441.conjecture` in `formal-conjectures`, under the hypothesis `ThetaBound`
+  (see also `bernoulli_sub_den_eq_radical_iff` in `Denominators.lean`);
 * `kellner2017`: [Kellner 2017, Conjecture 1];
 * `alekseyev`: Alekseyev's conjecture in OEIS A094960.
 -/
@@ -119,7 +121,8 @@ theorem iterate_derivative_aux (h : ThetaBound) (k : ℕ) (hk1 : 1 ≤ k) (hk3 :
     rw [beq_iff_eq, Bool.eq_iff_iff, critB_iff (by omega), List.contains_iff_mem] at ht
     exact ht
 
-/-- **`B_n'(x)` has integral coefficients iff `n ∈ {1, 2, 4, 6, 10, 12, 28, 30, 36, 60}`.** -/
+/-- **For `n ≥ 1`, `B_n'(x)` has integral coefficients iff `n ∈ {1, 2, 4, 6, 10, 12, 28, 30, 36, 60}`**
+([Kellner 2024, Conjecture 1(ii)]). -/
 theorem bernoulli_derivative_intCoeffs_iff (h : ThetaBound) {n : ℕ} (hn : 1 ≤ n) :
     IntCoeffs (Polynomial.derivative (Polynomial.bernoulli n)) ↔
       n ∈ ({1, 2, 4, 6, 10, 12, 28, 30, 36, 60} : Finset ℕ) := by
@@ -244,8 +247,9 @@ theorem radical_check_iff {n : ℕ} (hn : n + 1 < 2030) :
       rw [dsum_eq hp.two_le (by omega), ← Nat.dvd_iff_mod_eq_zero]
       exact h p hp
 
-/-- **OEIS A195441** ([Kellner 2024, Conjecture 11]), stated exactly as `OeisA195441.conjecture`
-in `google-deepmind/formal-conjectures`. -/
+/-- **OEIS A195441** ([Kellner 2024, Conjecture 11]).  The definition of `a` and the conclusion are those
+of `OeisA195441.conjecture` in `google-deepmind/formal-conjectures`; unlike that statement, this theorem
+assumes `ThetaBound`. -/
 theorem oeis_A195441 (h : ThetaBound) :
     {n : ℕ | 1 ≤ n ∧ a (n - 1) = UniqueFactorizationMonoid.radical (n + 1)} =
       ({3, 5, 8, 9, 11, 27, 29, 35, 59} : Finset ℕ) := by
