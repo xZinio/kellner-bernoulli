@@ -1,0 +1,6 @@
+/.lake
+*.olean
+/paper/*.aux
+/paper/*.log
+/verify/finite
+/verify/kappa
