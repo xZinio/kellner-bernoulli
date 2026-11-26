@@ -1,7 +1,5 @@
 # Bernoulli polynomials with integral derivatives
 
-Carlos Kuban
-
 This repository contains a proof of several conjectures of B. C. Kellner on the denominators of
 Bernoulli polynomials, a Lean 4 formalization of it, and the computations it uses.
 
