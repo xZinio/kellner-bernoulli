@@ -1,5 +1,5 @@
 # Second program, written separately from finite.cpp, in pure Python (integer arithmetic only).
-#   python3 verify2.py exact N      b_1..b_8 from the definition (digit sums computed digit by digit), n < N;
+#   python3 verify2.py exact N      b_1..b_24 from the definition (digit sums computed digit by digit), n < N;
 #                                   exits with status 1 unless they are the values of Theorem 1
 #   python3 verify2.py range S0 S1  for S0 <= s < S1: the first 40 primes p>s, bad r in [0,2s] (n=s^2+r) from
 #                                   c*p <= u^2+r <= c*p+2u-c-1, u=p-s, c>=0
@@ -14,16 +14,19 @@ def sd(n, p):
     while n: t += n % p; n //= p
     return t
 if sys.argv[1] == 'exact':
-    N = int(sys.argv[2]); PR = primes(N); last = [0] * 9
+    K = 24
+    B = [192, 1080, 2014, 2430, 3360, 5076, 5796, 11824, 13440, 13440, 15438, 17748, 26640, 26640, 32128, 32130,
+         37570, 44516, 44520, 53760, 62616, 62618, 63596, 75140]
+    N = int(sys.argv[2]); PR = primes(N); last = [0] * (K + 1)
     for n in range(1, N):
         w = 0
         for i in range(bisect.bisect_right(PR, math.isqrt(n)), len(PR)):
             p = PR[i]
-            if p > n or w >= 8: break
+            if p > n or w >= K: break
             w += sd(n, p) >= p
-        for k in range(w + 1, 9): last[k] = n
-    print('largest n < %d with omega(D_n^+) < k, k=1..8:' % N, last[1:])
-    if N > 11825 and last[1:] != [192, 1080, 2014, 2430, 3360, 5076, 5796, 11824]:
+        for k in range(w + 1, K + 1): last[k] = n
+    print('largest n < %d with omega(D_n^+) < k, k=1..%d:' % (N, K), last[1:])
+    if N > B[-1] + 1 and last[1:] != B:
         print('CHECK FAILED: b_k differ from Theorem 1'); sys.exit(1)
 else:
     S0, S1, m = int(sys.argv[2]), int(sys.argv[3]), 40

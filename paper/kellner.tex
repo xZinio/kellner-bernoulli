@@ -6,6 +6,7 @@
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
 \theoremstyle{remark}
 \newtheorem*{remark}{Remark}
 \numberwithin{equation}{section}
@@ -27,6 +28,12 @@ conjectures of Kellner and of Alekseyev; some of these need the stronger bounds.
 The proof is short. A telescoping argument shows that fewer than $4+2U^2/\sqrt n$ of the $U$ integers $m$ following $\fl{\sqrt n}$
 have base-$m$ digit sum smaller than $m$; this is combined with a classical explicit estimate for the number of primes in short intervals
 and a computation.
+
+We also study the least $k=a(n)$ for which the $k$th derivative of $B_n(x)$ has integral coefficients (OEIS A366189). We show that
+$a(n)\le\lceil\sqrt{n+2}\,\rceil-1$, with equality when $n+1$ is the square of a prime, determine the least $n$ with $a(n)>k$ for every
+$k$, and prove $a(n)>(\sqrt n-1)/(4\log^2n)$, using the explicit lower bound $\sqrt n/(4\log^2n)$, valid for all $n>192$, for the
+number of primes $p>\sqrt n$ with $s_p(n)\ge p$. This makes Kellner's theorem that each value occurs only finitely often in $a(n)$
+effective. We conjecture that $a(n)\sim\sqrt n$.
 \end{abstract}
 \maketitle
 
@@ -50,12 +57,16 @@ the conjecture. We prove it in the following form.
 \begin{theorem}\label{thm:main}
 For every $n>192$ there is a prime $p>\sqrt n$ with $s_p(n)\ge p$. More generally $\omega(\Dp_n)\ge k$ for all $n>b_k$, where
 \[
-\begin{array}{c|cccccccc}
-k&1&2&3&4&5&6&7&8\\ \hline
-b_k&192&1080&2014&2430&3360&5076&5796&11824
+\setlength{\arraycolsep}{4pt}
+\begin{array}{c|cccccccccccc}
+k&1&2&3&4&5&6&7&8&9&10&11&12\\ \hline
+b_k&192&1080&2014&2430&3360&5076&5796&11824&13440&13440&15438&17748\\[6pt]
+k&13&14&15&16&17&18&19&20&21&22&23&24\\ \hline
+b_k&26640&26640&32128&32130&37570&44516&44520&53760&62616&62618&63596&75140
 \end{array}
 \]
-and these values of $b_k$ are best possible: $\omega(\Dp_{b_k})=k-1$.
+and these values of $b_k$ are best possible: $\omega(\Dp_{b_k})=k-1$, except for $k=10$ and $k=14$, where $b_k=b_{k-1}$ and
+$\omega(\Dp_{b_k})=k-2$.
 \end{theorem}
 
 The first statement of Theorem~\ref{thm:main} suffices for Corollaries~\ref{cor:first} and~\ref{cor:alek} and for the first inequality
@@ -93,7 +104,10 @@ where $a\text{--}b$ stands for all integers from $a$ to $b$. Moreover
 \begin{array}{c|cccccccccccc}
 k&1&2&3&4&5&6&7&8&9&10&11&12\\ \hline
 |\Sb_k|&10&29&59&88&125&164&211&258&310&368&433&502\\
-\max\Sb_k&60&190&392&393&904&905&906&907&908&1089&2080&2387
+\max\Sb_k&60&190&392&393&904&905&906&907&908&1089&2080&2387\\[6pt]
+k&13&14&15&16&17&18&19&20&21&22&23&24\\ \hline
+|\Sb_k|&574&646&720&795&874&957&1048&1133&1225&1317&1408&1503\\
+\max\Sb_k&2952&2953&2954&2955&2956&2957&2958&3763&3764&3765&3766&4775
 \end{array}
 \]
 In particular the $88$ terms of OEIS A366187 $(k=4)$ and the $125$ terms in the b-file of OEIS A366188 $(k=5)$ are all elements of
@@ -110,6 +124,15 @@ For every integer $k>78$ there is a prime $p\ge3$ such that the sum of the last 
 
 Alekseyev stated this conjecture in 2012 in the OEIS entry A094960, and later proved it for all $k$ such that $k+1$ is not a prime,
 a power of $2$, or a Giuga number \cite{OEIS}.
+
+\emph{The integral index.} For $n\ge1$ let $a(n)$ be the least $k\ge1$ with $B_n^{(k)}(x)\in\ZZ[x]$ (OEIS A366189), so that
+$a(n)\le k$ if and only if $n\in\Sb_k$. The conjecture stated in OEIS A366189, that every value occurs only finitely often in
+this sequence, is equivalent to the finiteness of all the sets $\Sb_k$, which Kellner proved \cite[Theorem 14]{K24} with the
+non-effective results of \cite{BLMS}. In Section~\ref{sec:index} we find the least $n$ not in $\Sb_k$ for every $k$
+(Theorem~\ref{thm:gap}), show that $a(n)\le\lceil\sqrt{n+2}\,\rceil-1$ with equality when $n+1$ is the square of a prime
+(Corollary~\ref{cor:index}), prove that $\omega(\Dp_n)>\sqrt n/(4\log^2n)$ for all $n>192$ (Theorem~\ref{thm:explicit}), and deduce
+the effective bounds $a(n)>(\sqrt n-1)/(4\log^2n)$ and $\max\Sb_k<10^5k^2\log^4(k+1)+k$ for all $k$ (Corollary~\ref{cor:effective}).
+Thus $a(n)=n^{1/2+o(1)}$, and we conjecture that $a(n)\sim\sqrt n$ (Conjecture~\ref{conj:index}).
 
 \section{The counting lemma}
 
@@ -162,29 +185,30 @@ here we need that there are many of them. If a prime $p>s$ is good, then $p\mid\
 
 \section{Large \texorpdfstring{$n$}{n}}
 
-Let $s\ge10^9$ and write $\ell=\log s>20$. With $\vartheta(y)=\sum_{p\le y}\log p$, Rosser and Schoenfeld
+Let $s\ge678\,407$ and write $\ell=\log s\ge13.42$. With $\vartheta(y)=\sum_{p\le y}\log p$, Rosser and Schoenfeld
 \cite[Corollary 2, (5.7)]{RS} (see also \cite[Table 2]{BKLNW}) proved
 \begin{equation}\label{eq:RS}
 |\vartheta(y)-y|<\frac y{40\log y}\qquad(y\ge678\,407).
 \end{equation}
 Much stronger bounds are known; for instance $|\vartheta(y)-y|<0.2\,y/\log^2y$ for $y\ge3\,594\,641$ \cite[Theorem 4.2]{D18}
-(see also \cite[Table 3]{BKLNW}). Take $U=\fl{s/(4\ell)}$. Then $U\le s/80$ and $\log(s+U)\le\ell+\frac1{4\ell}\le1.00063\,\ell$, so
+(see also \cite[Table 3]{BKLNW}). Take $U=\fl{s/(4\ell)}$. Then $U\le s/53.68$ and $\log(s+U)\le\ell+\frac1{4\ell}\le1.0014\,\ell$, so
 \[
-\vartheta(s+U)-\vartheta(s)\ge U-\frac{2s+U}{40\,\ell}\ge\frac s{4\ell}-1-0.0504\,\frac s\ell=0.1996\,\frac s\ell-1,
+\vartheta(s+U)-\vartheta(s)>U-\frac{2s+U}{40\,\ell}\ge\frac s{4\ell}-1-0.05047\,\frac s\ell=0.19953\,\frac s\ell-1,
 \]
 \[
-\pi(s+U)-\pi(s)\ge\frac{\vartheta(s+U)-\vartheta(s)}{\log(s+U)}\ge0.1994\,\frac s{\ell^2}-1 .
+\pi(s+U)-\pi(s)\ge\frac{\vartheta(s+U)-\vartheta(s)}{\log(s+U)}>0.19925\,\frac s{\ell^2}-\frac1\ell .
 \]
-Since $\frac{2U^2}{s+U}\le\frac s{8\ell^2}$, \eqref{eq:main} gives
+Since $\frac{2U^2}{s+U}\le\frac s{8\ell^2}$ and $\frac1\ell<0.08$, \eqref{eq:main} gives
 \begin{equation}\label{eq:large}
-\omega(\Dp_n)\ge0.0744\,\frac s{\log^2s}-5>10^5\qquad(s=\fl{\sqrt n}\ge10^9),
+\omega(\Dp_n)>0.0742\,\frac s{\log^2s}-4.08>274\qquad(s=\fl{\sqrt n}\ge678\,407),
 \end{equation}
-because $s/\log^2s$ is increasing for $s>e^2$ and exceeds $2.3\cdot10^6$ at $s=10^9$ (there $U=12\,063\,735$, and the bound in
-\eqref{eq:large} is $173\,238.3\ldots$).
+because $s/\log^2s$ is increasing for $s>e^2$ and exceeds $3759$ at $s=678\,407$. (At $s=10^9$ the bound in \eqref{eq:large}
+exceeds $1.7\cdot10^5$.)
 
 \section{Small \texorpdfstring{$n$}{n}}
 
-It remains to consider $n<10^{18}$. Let $s^2\le n\le s^2+2s$. A prime $p>s$ is bad for $n$ if and only if, with $q=\fl{n/p}$, we have
+By \eqref{eq:large} it remains to consider $s<678\,407$, that is, $n<678\,407^2\approx4.6\cdot10^{11}$.
+Let $s^2\le n\le s^2+2s$. A prime $p>s$ is bad for $n$ if and only if, with $q=\fl{n/p}$, we have
 $q+(n-qp)<p$. So the $n\in[s^2,s^2+2s]$ for which $p$ is bad are those in the intervals
 \[
 [\,qp,\ qp+p-1-q\,]\cap[s^2,s^2+2s]\qquad(q\ge0),
@@ -197,13 +221,15 @@ same $n$; the maximum $16$ is attained for the first time at $s=1726$, $n=2\,980
 \begin{equation}\label{eq:middle}
 \omega(\Dp_n)\ge24\qquad(1500^2\le n<10^{18}).
 \end{equation}
-For $n<1500^2$ we computed $\omega(\Dp_n)$ from the definition, as far as needed; for $k\le8$ the largest $n$ with $\omega(\Dp_n)<k$ is
-$b_k$, and $\omega(\Dp_{b_k})=k-1$. With \eqref{eq:large} and \eqref{eq:middle} this proves Theorem \ref{thm:main}.
+Only the range $s<678\,407$ of \eqref{eq:middle} is used below; for larger $s$ it is a weaker, independent confirmation of
+\eqref{eq:large}. For $n<1500^2$ we computed $\omega(\Dp_n)$ from the definition, as far as needed; for $k\le24$ the largest $n$ with
+$\omega(\Dp_n)<k$ is $b_k$, and $\omega(\Dp_{b_k})$ is as stated in Theorem~\ref{thm:main}. With \eqref{eq:large} and
+\eqref{eq:middle} this proves Theorem \ref{thm:main}.
 
-The programs use integer arithmetic only. The computation for $1500\le s<10^9$ takes about $28$ CPU-minutes, almost all of it for
-$s\ge4\cdot10^6$, a range which could also be covered by \eqref{eq:RS}. For $1500\le s\le4\cdot10^6$ it was repeated with a second
-program, written separately in Python, which parametrizes the intervals differently. The programs, and a script that runs them and
-checks every value stated in this paper, are part of the code accompanying the paper (Section~\ref{sec:formal}).
+The programs use integer arithmetic only. The computation for $1500\le s<678\,407$ takes a few CPU-seconds, and the one for
+$1500\le s<10^9$ about $28$ CPU-minutes. For $1500\le s\le4\cdot10^6$ it was repeated with a second program, written separately in
+Python, which parametrizes the intervals differently; this program also recomputes $b_1,\dots,b_{24}$. The programs, and a script that
+runs them and checks every value stated in this paper, are part of the code accompanying the paper (Section~\ref{sec:formal}).
 The $n$ with $\Dp_n=1$ are $1$, $2$, $4$, $6$, $10$, $11$, $12$, $15$, $16$, $28$, $29$, $30$, $35$, $36$, $58$, $59$, $60$, $69$,
 $70$, $78$, $79$, $80$, $174$, $190$, $191$, $192$.
 
@@ -264,7 +290,7 @@ All $n<k$ belong to $\Sb_k$. For $n\ge k$ put $m=n-k+1$. By Proposition \ref{pro
 $s_p(m)\ge p$ divides $m(m+1)\cdots(m+k-1)$.
 Suppose that $k\le\fl{\sqrt m}+2$ and $\omega(\Dp_m)\ge k$. By (A) no prime dividing $\Dp_m$ divides $m$, and by (B) each of
 $m+1,\dots,m+k-1$ is divisible by at most one of them, so that $n\notin\Sb_k$.
-By \eqref{eq:large} and \eqref{eq:middle} this applies, for all $k\le24$, to all $m\ge1500^2$ (and for $k\le8$, by
+By \eqref{eq:large} and \eqref{eq:middle} this applies, for all $k\le24$, to all $m\ge1500^2$ (and, by
 Theorem \ref{thm:main}, to all $m>b_k$). The remaining $m$ were checked.
 \end{proof}
 
@@ -285,11 +311,126 @@ Proposition \ref{prop:den}; by Theorem \ref{thm:main} and the proofs above it su
 respectively.
 \end{remark}
 
+\section{The integral index}\label{sec:index}
+
+For $n\ge1$ let $a(n)$ be the least $k\ge1$ with $B_n^{(k)}(x)\in\ZZ[x]$ (OEIS A366189). As $\Sb_1\subset\Sb_2\subset\cdots$
+\cite[Theorem 14]{K24}, we have $a(n)\le k$ if and only if $n\in\Sb_k$. All $n<k$ belong to $\Sb_k$, and for $1\le k\le n$ and
+$m=n-k+1$, Proposition~\ref{prop:den} says that
+\begin{equation}\label{eq:crit}
+n\in\Sb_k\iff\text{every prime $p$ with $s_p(m)\ge p$ divides one of $m,m+1,\dots,m+k-1$.}
+\end{equation}
+
+\begin{theorem}\label{thm:gap}
+Let $k\ge1$, and let $p$ be the least prime larger than $k$. Then $1,2,\dots,(k+1)p-2$ belong to $\Sb_k$, and $(k+1)p-1$ does not.
+\end{theorem}
+\begin{proof}
+Let $k\le n\le(k+1)p-1$ and $m=n-k+1\le(k+1)p-k$, and suppose that a prime $q$ with $s_q(m)\ge q$ divides none of $m,\dots,m+k-1$.
+Then $q>k$, as a prime $q\le k$ divides one of $k$ consecutive integers; so $q\ge p$, and $q^2\ge(k+1)p>m$. Thus $m=cq+r$ with
+$0\le c,r<q$ and $s_q(m)=c+r\ge q$. Hence $r\ge1$, and $j=q-r$ satisfies $1\le j\le c$ and $q\mid m+j$, so that $j\ge k$ by assumption.
+Therefore
+\[
+(k+1)p-k\ge m=cq+q-j\ge(j+1)q-j=j(q-1)+q\ge(k+1)q-k\ge(k+1)p-k,
+\]
+and equality holds throughout: $q=p$, $c=j=k$ and $m=(k+1)p-k$, that is, $n=(k+1)p-1$. By \eqref{eq:crit} this proves the first claim.
+Conversely, $m=(k+1)p-k=kp+(p-k)$ has $s_p(m)=p$, and $m+i\equiv i-k\not\equiv0\pmod p$ for $0\le i<k$; so $(k+1)p-1\notin\Sb_k$.
+\end{proof}
+
+\begin{corollary}\label{cor:index}
+For $n\ge1$,
+\[
+a(n)\le\lceil\sqrt{n+2}\,\rceil-1,
+\]
+with equality if $n+1$ is the square of a prime. For $k\ge1$ the least $n$ with $a(n)=k$ is $kq-1$, where $q$ is the least prime
+$q\ge k$. The set $\Sb_k$ contains $1,2,\dots,k^2+2k-1$, and it contains $k^2+2k$ if and only if $k+1$ is not a prime.
+\end{corollary}
+\begin{proof}
+For $k\ge1$ let $p_k\ge k+1$ be the least prime larger than $k$. Let $k=\lceil\sqrt{n+2}\,\rceil-1\ge1$. Then
+$n\le(k+1)^2-2\le(k+1)p_k-2$, so $a(n)\le k$ by Theorem~\ref{thm:gap}. If $n=p^2-1$ with $p$ prime, then $k=p$, and
+Theorem~\ref{thm:gap} with $p-1$ in place of $k$ gives $n\notin\Sb_{p-1}$, so $a(n)=p$. The least $n$ with $a(n)=1$ is $1$. For
+$k\ge2$ we have $p_{k-1}=q$, so Theorem~\ref{thm:gap} with $k-1$ in place of $k$ shows that $kq-1$ is the least $n$ with $a(n)>k-1$;
+and $kq-1\le kp_k-1\le(k+1)p_k-2$, so that $a(kq-1)\le k$. The last claim follows from Theorem~\ref{thm:gap}, as
+$(k+1)p_k-2\ge k^2+2k-1$, with equality if and only if $p_k=k+1$, and $(k+1)p_k-1>k^2+2k$ if $p_k>k+1$.
+\end{proof}
+
+So the sets $\Sb_k$ begin with an interval of length about $k^2$, and $\limsup a(n)/\sqrt n=1$. By Corollary~\ref{cor:higher}, the
+value $k\le24$ occurs exactly $|\Sb_k|-|\Sb_{k-1}|$ times in the sequence $a(n)$ (with $|\Sb_0|=0$), that is,
+$10,19,30,29,37,39,47,47,52,58,65,69,72,72,74,75,79,83,91,85,92,92,91,95$ times, and the last time at $n=\max\Sb_k$, as these maxima
+increase with $k$. For general $k$ we need a lower bound for $\omega(\Dp_n)$ that holds for all $n$.
+
+\begin{theorem}\label{thm:explicit}
+For every $n>192$,
+\[
+\omega(\Dp_n)>\frac{\sqrt n}{4\log^2n}.
+\]
+\end{theorem}
+\begin{proof}
+The function $\sqrt x/\log^2x$ is increasing for $x>e^4$, and at $x=1080$ and $x=1500^2$ the right-hand side is smaller than $1$
+and $2$, respectively. So for $n<1500^2$ the claim follows from Theorem~\ref{thm:main} with $k=1,2$. Let $s=\fl{\sqrt n}\ge1500$.
+As $\sqrt n<s+1$ and $\log n\ge2\log s$, it suffices to show that $\omega(\Dp_n)\ge(s+1)/(16\log^2s)$. For $s\ge678\,407$ this follows
+from \eqref{eq:large}, as $(0.0742-\frac1{16})\,s/\log^2s\ge0.0117\cdot3759>4.08+\frac1{16\log^2s}$. For $1500\le s<678\,407$ we used
+\eqref{eq:middle} and \eqref{eq:main}, where by Lemma~\ref{lem:bad} at most $\lceil4+2U^2/(s+U)\rceil-1$ of the integers
+$s+1,\dots,s+U$ are bad: with exact values of $\pi$, we checked for each such $s$ that
+\[
+M(s)=\max\Bigl(24,\ \max_U\bigl(\pi(s+U)-\pi(s)-\lceil4+2U^2/(s+U)\rceil+1\bigr)\Bigr)\ge\frac{s+1}{16\log^2s},
+\]
+the inner maximum over nine values of $U$ between about $0.15\,s/\log s$ and $0.35\,s/\log s$, and with a rational lower bound for
+$\log s$. With this lower bound, the ratio of the two sides is smallest, $1.380\ldots$, at $s=29\,453$, where $M(s)=24$.
+\end{proof}
+
+For every $k\ge1$ let $b_k$ be the largest $n$ with $\omega(\Dp_n)<k$; it exists by Theorem~\ref{thm:explicit}, and for $k\le24$ it is
+the value in Theorem~\ref{thm:main}.
+
+\begin{corollary}\label{cor:effective}
+Let $k\ge1$ and $n\ge2$. Then
+\begin{itemize}
+\item[(a)] $b_k<10^5k^2\log^4(k+1)$, that is, $\omega(\Dp_m)\ge k$ for all $m\ge10^5k^2\log^4(k+1)$;
+\item[(b)] $k^2+2k-1\le\max\Sb_k\le\max(b_k,k^2)+k-1<10^5k^2\log^4(k+1)+k$;
+\item[(c)] $\dfrac{\sqrt n-1}{4\log^2n}<a(n)<\sqrt{n+2}$.
+\end{itemize}
+\end{corollary}
+\begin{proof}
+(a) For $k\le24$ this follows from Theorem~\ref{thm:main}. Let $k\ge25$, $N=10^5k^2\log^4(k+1)$ and $L=\log(k+1)$. As
+$\sqrt x/\log^2x$ is increasing for $x>e^4$, by Theorem~\ref{thm:explicit} it suffices that $\sqrt N\ge4(k-1)\log^2N$. Now
+$\sqrt N>316\,kL^2$ and $\log N\le11.52+2L+4\log L$, so it suffices that $316\,L^2\ge4(11.52+2L+4\log L)^2$, which follows from
+$13.77\,L-8\log L\ge23.04$. The left-hand side is increasing for $L\ge1$ and exceeds $35$ at $L=\log26$.
+
+(b) The first inequality is Corollary~\ref{cor:index}. Let $n\in\Sb_k$ with $n\ge k$, and $m=n-k+1$. If $k\le\fl{\sqrt m}+2$, then
+$\omega(\Dp_m)\le k-1$ by the proof of Corollary~\ref{cor:higher}, so $m\le b_k$; otherwise $m<k^2$. Now use (a).
+
+(c) The upper bound is Corollary~\ref{cor:index}. Let $k\ge1$ be an integer with $k\le(\sqrt n-1)/(4\log^2n)$; such a $k$ exists only if
+$n>4\cdot10^5$, and then $k<\sqrt n/600$. Let $m=n-k+1$. Then $m>n-\sqrt n>192$, $k\le\fl{\sqrt m}+2$ and $\sqrt m\ge\sqrt n-1$. By
+Theorem~\ref{thm:explicit}, $\omega(\Dp_m)>\sqrt m/(4\log^2m)\ge(\sqrt n-1)/(4\log^2n)\ge k$, so that $n\notin\Sb_k$ by the proof of
+Corollary~\ref{cor:higher}. Hence $a(n)>k$ for all such $k$, which proves the lower bound.
+\end{proof}
+
+By the asymptotic formula $\omega(\Dp_m)\sim2\sqrt m/\log m$ of \cite{B17,BLMS}, the proof of (c) also gives
+$a(n)\ge(2+o(1))\sqrt n/\log n$, but without an explicit error term. The sets $\Sb_k$ for $k\le24$ (Corollary~\ref{cor:higher}) are far
+from intervals, but the ratio $\max\Sb_k/k^2$, which is $60$ for $k=1$, is about $8$ for $k=24$, and the data below, for much larger
+$n$, support the following.
+
+\begin{conjecture}\label{conj:index}
+$a(n)\sim\sqrt n$ as $n\to\infty$; equivalently, $\max\Sb_k\sim k^2$ as $k\to\infty$.
+\end{conjecture}
+
+The two statements are equivalent by Corollaries~\ref{cor:index} and~\ref{cor:effective}. We computed $a(n)$ for all $n<2^{24}$
+from \eqref{eq:crit}. The minimum of $a(n)/\sqrt n$ over $2^j\le n<2^{j+1}$ (rounded down) is
+\[
+\begin{array}{c|cccccccccccc}
+j&12&13&14&15&16&17&18&19&20&21&22&23\\ \hline
+\min a(n)/\sqrt n&.347&.347&.373&.441&.497&.536&.589&.631&.656&.710&.743&.761
+\end{array}
+\]
+attained at $n=8\,469\,236$, $a(n)=2217$, for $j=23$. A heuristic count of the primes $q$ that could violate \eqref{eq:crit} for
+$k=\sqrt n-t$, all of which lie in $(k,m/k]$, suggests that $\sqrt n-a(n)$ is at most of order $n^{1/4}\log n$; the data are
+consistent with this. The same computation confirms Theorem~\ref{thm:gap} for $k\le4092$, Corollary~\ref{cor:index} for $n<2^{24}$,
+and the table of Corollary~\ref{cor:higher}.
+
 \section{Formal verification}\label{sec:formal}
 
-Most of this paper has been formalized in Lean~4 with Mathlib (version~4.36.0). The Lean code, and the programs and the script
-mentioned in Section~4, are available at \url{https://github.com/xZinio/kellner-bernoulli}; the version described here is tagged
-\texttt{v2}. Table~\ref{tab:formal} lists what the formal proofs cover.
+Most of Sections~1--6 has been formalized in Lean~4 with Mathlib (version~4.36.0); Section~\ref{sec:index} has not. The Lean code,
+and the programs and the script mentioned in Sections~4 and~\ref{sec:index}, are available at
+\url{https://github.com/xZinio/kellner-bernoulli}; the version described here is tagged \texttt{v3}. Table~\ref{tab:formal} lists
+what the formal proofs cover.
 
 The estimate \eqref{eq:RS} is not available in Mathlib, and we have not formalized it. It enters the formal proofs as an explicit
 hypothesis \lean{ThetaBound}, namely $|\vartheta(y)-y|\le y/(40\log y)$ for all real $y\ge4\cdot10^6$, and not as an axiom; Lean checks
@@ -310,26 +451,31 @@ so it does not settle that formal statement unconditionally.
 \begin{table}[ht]
 \small
 \caption{What is formally verified. ``Hyp.'': proved assuming \lean{ThetaBound}; for Theorem~\ref{thm:main} also without it for
-$n<1.6\cdot10^{13}$. ``Comp.'': established by the programs of Section~4 and the Remark in Section~6 only.}\label{tab:formal}
+$n<1.6\cdot10^{13}$. ``Comp.'': established by the programs of Sections~4 and~\ref{sec:index} and the Remark in Section~6 only.
+``Paper'': proved in the paper only, and checked by a program for $k\le4092$ and $n<2^{24}$.}\label{tab:formal}
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.7cm}>{\raggedright\arraybackslash}p{9.3cm}l@{}}
 Result & Lean declarations & Status\\ \hline
 Lemmas \ref{lem:one}, \ref{lem:bad} & \lean{bad_imp}, \lean{div_pred_le}, \lean{card_bad_mul_lt} & proved\\
 Theorem \ref{thm:main}, first statement & \lean{kellner_conjecture}, \lean{kellner_conjecture_of_lt} & hyp.\\
 Theorem \ref{thm:main}, $k\le3$, and $\omega(\Dp_{b_k})=k-1$ for $k\le3$ & \lean{card_goodPrimes_ge_of_thetaBound}, \lean{card_goodPrimes_ge_of_lt}, \lean{card_goodPrimes_thresholds} & hyp.\\
-Theorem \ref{thm:main}, $4\le k\le8$; \eqref{eq:large}; \eqref{eq:middle} & --- & comp.\\
+Theorem \ref{thm:main}, $4\le k\le24$; \eqref{eq:large}; \eqref{eq:middle} & --- & comp.\\
 Proposition \ref{prop:den} & \lean{squarefree_polyDen_bernoulli_sub}, \lean{prime_dvd_polyDen_bernoulli_sub_iff}, \lean{squarefree_polyDen_iterate_derivative}, \lean{prime_dvd_polyDen_iterate_derivative_iff} & proved\\
 Corollary \ref{cor:first} & \lean{bernoulli_derivative_intCoeffs_iff} & hyp.\\
 Corollary \ref{cor:R} & \lean{bernoulli_sub_den_eq_radical_iff}, \lean{oeis_A195441} & hyp.\\
 Corollary \ref{cor:higher}, sets $\Sb_2$, $\Sb_3$ & \lean{bernoulli_iterate_derivative_two}, \lean{bernoulli_iterate_derivative_three} & hyp.\\
-Corollary \ref{cor:higher}, table for $4\le k\le12$ & --- & comp.\\
+Corollary \ref{cor:higher}, table for $4\le k\le24$ & --- & comp.\\
 Corollaries \ref{cor:K17}, \ref{cor:alek} & \lean{kellner2017}, \lean{alekseyev} & hyp.\\
+Theorem \ref{thm:gap}, Corollary \ref{cor:index} & --- & paper\\
+Theorem \ref{thm:explicit}, Corollary \ref{cor:effective} & --- & comp.\\
 \end{tabular}
 \end{table}
 
 \subsection*{Acknowledgement}
 This work was carried out with very heavy assistance of a large language model (Claude), which was used for the proof, the
 computations, the Lean formalization and the writing. In particular, the two programs mentioned in Section~4 were written separately
-but with the same assistance, so they are not independent in authorship. The paper has not yet been refereed by a journal.
+but with the same assistance, so they are not independent in authorship. Section~\ref{sec:index}, the extension of the tables to
+$k\le24$ and the reduction of the computation of Section~4 to $s<678\,407$ were added in a later revision, with the same assistance.
+The paper has not yet been refereed by a journal.
 
 \begin{thebibliography}{99}
 \bibitem{B17} O. Bordell\`es, \emph{On a conjecture of B. C. Kellner}, preprint (2017), arXiv:1705.06128.
